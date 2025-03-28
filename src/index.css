@@ -139,3 +139,12 @@
     padding: 0;
   }
 }
+
+/* Styles spécifiques pour les composants collapsibles */
+.collapsible-icon {
+  transition: transform 0.2s ease;
+}
+
+[data-state="open"] .collapsible-icon {
+  transform: rotate(180deg);
+}
