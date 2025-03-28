@@ -1,4 +1,7 @@
 
+@import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -101,6 +104,10 @@
 
 .app-title {
   @apply font-display font-bold text-culinary-dark;
+}
+
+.app-logo-text {
+  @apply font-lobster text-culinary-dark;
 }
 
 .gradient-bg {

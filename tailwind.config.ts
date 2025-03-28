@@ -100,6 +100,7 @@ export default {
 			},
       fontFamily: {
         'display': ['"Playfair Display"', 'serif'],
+        'lobster': ['Lobster', 'cursive'],
       }
 		}
 	},

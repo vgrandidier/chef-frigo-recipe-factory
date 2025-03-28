@@ -10,6 +10,8 @@ import { Logo } from "@/components/Logo";
 import { useToast } from "@/components/ui/use-toast";
 import { Progress } from "@/components/ui/progress";
 import { X } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 const CUISINE_TYPES = [
   "Africaine",
@@ -38,6 +40,9 @@ const RecipeForm = () => {
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
   const [progress, setProgress] = useState(0);
+  const [fondDeFrigo, setFondDeFrigo] = useState(false);
+  const [pressé, setPressé] = useState(false);
+  const [léger, setLéger] = useState(false);
   
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -109,9 +114,19 @@ const RecipeForm = () => {
     
     const apiKey = "bX7PSeGLmU5Qh6JYnvr2tzvESPhiORAH"; // Remplacez par votre clé API
     
+    // Construct additional requirements based on checkboxes
+    const additionalRequirements = [];
+    if (fondDeFrigo) additionalRequirements.push("en utilisant le minimum d'ingrédients et avec des substitutions possibles pour les ingrédients courants");
+    if (pressé) additionalRequirements.push("avec un temps de préparation court, maximum 15 minutes");
+    if (léger) additionalRequirements.push("avec un minimum de calories et un Nutri-Score favorable");
+    
+    const additionalPrompt = additionalRequirements.length > 0 
+      ? `Contraintes supplémentaires: ${additionalRequirements.join('. ')}. ` 
+      : '';
+    
     const prompt = `Je voudrais une recette de type ${cuisineType} avec ${ingredients.join(
       ", "
-    )}. En retour, je veux un titre, une description, la liste des ustensiles nécessaires, la liste complète des ingrédients avec les quantités, les valeurs nutritionnelles pour 100g (kcal, protéines, glucides, lipides, fibres), le Nutri-Score, le temps de préparation, le temps total, et les instructions pour la réalisation de la recette par étape. Les instructions doivent être regroupées par type de travail (préparation, cuisson, montage, etc.), et chaque groupe doit avoir un titre. Formate le résultat en JSON avec la structure suivante :
+    )}. ${additionalPrompt}En retour, je veux un titre, une description, la liste des ustensiles nécessaires, la liste complète des ingrédients avec les quantités, les valeurs nutritionnelles pour 100g (kcal, protéines, glucides, lipides, fibres), le Nutri-Score, le temps de préparation, le temps total, et les instructions pour la réalisation de la recette par étape. Les instructions doivent être regroupées par type de travail (préparation, cuisson, montage, etc.), et chaque groupe doit avoir un titre. Formate le résultat en JSON avec la structure suivante :
     {
       "titre": "Nom de la recette",
       "description": "Description de la recette",
@@ -258,6 +273,38 @@ const RecipeForm = () => {
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+
+              <div className="space-y-3">
+                <label className="text-sm font-medium">Options</label>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="fondDeFrigo" 
+                      checked={fondDeFrigo} 
+                      onCheckedChange={(checked) => setFondDeFrigo(checked === true)}
+                    />
+                    <Label htmlFor="fondDeFrigo" className="cursor-pointer">Fond de frigo</Label>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="presse" 
+                      checked={pressé} 
+                      onCheckedChange={(checked) => setPressé(checked === true)}
+                    />
+                    <Label htmlFor="presse" className="cursor-pointer">Je suis pressé!</Label>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="leger" 
+                      checked={léger} 
+                      onCheckedChange={(checked) => setLéger(checked === true)}
+                    />
+                    <Label htmlFor="leger" className="cursor-pointer">Manger léger</Label>
+                  </div>
+                </div>
               </div>
 
               {loading && (
