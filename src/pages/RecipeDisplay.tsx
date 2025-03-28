@@ -1,0 +1,216 @@
+
+import { useLocation, useNavigate } from "react-router-dom";
+import { Logo } from "@/components/Logo";
+import { ActionIcons } from "@/components/ActionIcons";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
+
+interface RecipeIngredient {
+  nom: string;
+  quantite: string;
+}
+
+interface RecipeUstensil {
+  nom: string;
+}
+
+interface RecipeNutritionalValues {
+  kcal: string;
+  proteines: string;
+  glucides: string;
+  lipides: string;
+  fibres: string;
+}
+
+interface Recipe {
+  titre: string;
+  description: string;
+  ustensiles: RecipeUstensil[];
+  ingredients: RecipeIngredient[];
+  valeurs_nutritionnelles: RecipeNutritionalValues;
+  nutriscore: string;
+  temps_preparation: string;
+  temps_total: string;
+  instructions: Record<string, string[]>;
+}
+
+interface LocationState {
+  recipe: Recipe;
+}
+
+const RecipeDisplay = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const state = location.state as LocationState;
+  
+  // Si pas de recette, redirection vers le formulaire
+  if (!state || !state.recipe) {
+    navigate("/");
+    return null;
+  }
+  
+  const { recipe } = state;
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleBack = () => {
+    navigate("/");
+  };
+
+  // Badge variant selon le Nutri-Score
+  const getNutriScoreBadge = (score: string) => {
+    const scoreMap: Record<string, string> = {
+      A: "bg-green-500",
+      B: "bg-green-300",
+      C: "bg-yellow-300",
+      D: "bg-orange-400",
+      E: "bg-red-500",
+    };
+    
+    const firstChar = score.charAt(0).toUpperCase();
+    return scoreMap[firstChar] || "bg-gray-400";
+  };
+
+  return (
+    <div className="min-h-screen gradient-bg py-6 px-4 print:p-0 print:bg-white">
+      <div className="recipe-container print-friendly">
+        <div className="flex justify-between items-center mb-6 no-print">
+          <Logo size="md" />
+          <ActionIcons 
+            url={window.location.href}
+            onPrint={handlePrint}
+            onBack={handleBack}
+          />
+        </div>
+        
+        {/* Version d'impression uniquement visible lors de l'impression */}
+        <div className="hidden print:block print-only mb-8">
+          <Logo size="sm" className="mb-2" />
+          <p className="text-sm text-gray-600">www.chef-frigo.com</p>
+        </div>
+
+        <Card className="card-elevation border-culinary-primary/20 mb-8 print:shadow-none print:border-none">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-2xl md:text-3xl font-display text-culinary-dark">
+              {recipe.titre}
+            </CardTitle>
+            <CardDescription className="text-base mt-2">
+              {recipe.description}
+            </CardDescription>
+          </CardHeader>
+          
+          <CardContent>
+            <div className="flex flex-wrap gap-4 mb-6">
+              <div className="bg-culinary-light/50 rounded-md px-3 py-1.5 flex items-center">
+                <span className="text-sm font-medium">Préparation: </span>
+                <span className="text-sm ml-1">{recipe.temps_preparation}</span>
+              </div>
+              <div className="bg-culinary-light/50 rounded-md px-3 py-1.5 flex items-center">
+                <span className="text-sm font-medium">Total: </span>
+                <span className="text-sm ml-1">{recipe.temps_total}</span>
+              </div>
+              <div className="bg-culinary-light/50 rounded-md px-3 py-1.5 flex items-center">
+                <span className="text-sm font-medium mr-1">Nutri-Score: </span>
+                <Badge className={`${getNutriScoreBadge(recipe.nutriscore)} text-white`}>
+                  {recipe.nutriscore}
+                </Badge>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div>
+                <h3 className="text-lg font-medium mb-2 text-culinary-primary">Ingrédients</h3>
+                <ul className="space-y-2 text-sm">
+                  {recipe.ingredients.map((ingredient, index) => (
+                    <li key={`ingredient-${index}`} className="flex justify-between pb-1 border-b border-dashed border-culinary-primary/20">
+                      <span>{ingredient.nom}</span>
+                      <span className="font-medium">{ingredient.quantite}</span>
+                    </li>
+                  ))}
+                </ul>
+                
+                <h3 className="text-lg font-medium mb-2 mt-6 text-culinary-primary">Ustensiles</h3>
+                <ul className="space-y-1 text-sm">
+                  {recipe.ustensiles.map((ustensile, index) => (
+                    <li key={`ustensile-${index}`} className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-culinary-primary"></span>
+                      <span>{ustensile.nom}</span>
+                    </li>
+                  ))}
+                </ul>
+                
+                <div className="mt-6 p-4 bg-culinary-light/50 rounded-md">
+                  <h3 className="text-lg font-medium mb-2 text-culinary-primary">Valeurs Nutritionnelles</h3>
+                  <p className="text-xs text-gray-500 mb-2">Pour 100g</p>
+                  
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div className="flex justify-between">
+                      <span>Calories:</span>
+                      <span className="font-medium">{recipe.valeurs_nutritionnelles.kcal}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Protéines:</span>
+                      <span className="font-medium">{recipe.valeurs_nutritionnelles.proteines}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Glucides:</span>
+                      <span className="font-medium">{recipe.valeurs_nutritionnelles.glucides}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Lipides:</span>
+                      <span className="font-medium">{recipe.valeurs_nutritionnelles.lipides}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Fibres:</span>
+                      <span className="font-medium">{recipe.valeurs_nutritionnelles.fibres}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <h3 className="text-lg font-medium mb-3 text-culinary-primary">Instructions</h3>
+                <ScrollArea className="h-[500px] pr-4 print:h-auto">
+                  {Object.entries(recipe.instructions).map(([category, steps], categoryIndex) => (
+                    <div key={`cat-${categoryIndex}`} className="mb-6">
+                      <h4 className="font-medium text-culinary-secondary mb-2">{category}</h4>
+                      <ol className="space-y-3">
+                        {steps.map((step, stepIndex) => (
+                          <li key={`step-${categoryIndex}-${stepIndex}`} className="text-sm">
+                            <div className="flex">
+                              <span className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-culinary-accent/30 text-culinary-dark mr-3">
+                                {stepIndex + 1}
+                              </span>
+                              <span>{step}</span>
+                            </div>
+                          </li>
+                        ))}
+                      </ol>
+                    </div>
+                  ))}
+                </ScrollArea>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <div className="text-center text-sm text-gray-500 no-print">
+          Une création de Chef Frigo - Régalez-vous !
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default RecipeDisplay;

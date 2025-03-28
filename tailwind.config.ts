@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -24,6 +25,13 @@ export default {
 				ring: 'hsl(var(--ring))',
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
+				culinary: {
+          primary: '#FF6B35',   // Orange vif pour l'accent culinaire
+          secondary: '#2EC4B6', // Turquoise pour les accents secondaires
+          accent: '#FDCA40',    // Jaune pour certains surlignages
+          dark: '#3A506B',      // Bleu foncé pour le texte
+          light: '#F9F9F9',     // Blanc cassé pour le fond
+        },
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
 					foreground: 'hsl(var(--primary-foreground))'
@@ -89,7 +97,10 @@ export default {
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out'
-			}
+			},
+      fontFamily: {
+        'display': ['"Playfair Display"', 'serif'],
+      }
 		}
 	},
 	plugins: [require("tailwindcss-animate")],
