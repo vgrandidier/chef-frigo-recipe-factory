@@ -26,7 +26,7 @@ export function Logo({ size = "md", className }: LogoProps) {
         size={iconSize[size]} 
         className="text-culinary-primary" 
       />
-      <h1 className={cn("app-title", sizeClasses[size])}>
+      <h1 className={cn("app-logo-text", sizeClasses[size])}>
         <span className="text-culinary-primary">Chef</span>
         <span className="text-culinary-secondary">Frigo</span>
       </h1>
