@@ -1,5 +1,5 @@
 
-import { Share, Copy, ChefHat, ArrowBack, Printer } from "lucide-react";
+import { Share, Copy, ChefHat, ArrowLeft, Printer } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -42,7 +42,7 @@ export function ActionIcons({ url, onPrint, onBack, className }: ActionIconsProp
     <div className={cn("flex items-center gap-2", className)}>
       {onBack && (
         <Button onClick={onBack} variant="outline" size="icon" className="no-print">
-          <ArrowBack className="h-4 w-4" />
+          <ArrowLeft className="h-4 w-4" />
         </Button>
       )}
       

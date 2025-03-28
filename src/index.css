@@ -111,13 +111,17 @@
   @apply shadow-md hover:shadow-lg transition-shadow duration-300;
 }
 
+/* Un-nested version of print-friendly */
 .print-friendly {
-  @media print {
-    @apply p-8 max-w-full !important;
-  }
+  @apply p-8 max-w-full;
 }
 
 @media print {
+  .print-friendly {
+    padding: 2rem !important;
+    max-width: 100% !important;
+  }
+  
   .no-print {
     display: none !important;
   }
