@@ -1,10 +1,20 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { IngredientInput } from "@/components/IngredientInput";
 import { Logo } from "@/components/Logo";
 import { useToast } from "@/components/ui/use-toast";
@@ -30,6 +40,7 @@ const CUISINE_TYPES = [
   "Mexicaine",
   "Portugaise",
   "Québécoise",
+  "Scandinave",
   "Thaïe",
   "Vietnamienne",
 ];
@@ -43,7 +54,7 @@ const RecipeForm = () => {
   const [fondDeFrigo, setFondDeFrigo] = useState(false);
   const [pressé, setPressé] = useState(false);
   const [léger, setLéger] = useState(false);
-  
+
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -59,7 +70,7 @@ const RecipeForm = () => {
           return Math.min(prev + increment, 90);
         });
       }, 1000);
-      
+
       return () => clearInterval(interval);
     } else {
       setProgress(0);
@@ -86,7 +97,7 @@ const RecipeForm = () => {
       });
       return false;
     }
-    
+
     if (!cuisineType) {
       toast({
         title: "Type de cuisine manquant",
@@ -95,35 +106,45 @@ const RecipeForm = () => {
       });
       return false;
     }
-    
+
     return true;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
-    
+
     setLoading(true);
     setLoadingMessage("Préparation de votre recette personnalisée...");
     setProgress(10);
-    
+
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
     setCancelTokenSource(source);
-    
+
     const apiKey = "bX7PSeGLmU5Qh6JYnvr2tzvESPhiORAH"; // Remplacez par votre clé API
-    
+
     // Construct additional requirements based on checkboxes
     const additionalRequirements = [];
-    if (fondDeFrigo) additionalRequirements.push("en utilisant le minimum d'ingrédients et avec des substitutions possibles pour les ingrédients courants");
-    if (pressé) additionalRequirements.push("avec un temps de préparation court, maximum 15 minutes");
-    if (léger) additionalRequirements.push("avec un minimum de calories et un Nutri-Score favorable");
-    
-    const additionalPrompt = additionalRequirements.length > 0 
-      ? `Contraintes supplémentaires: ${additionalRequirements.join('. ')}. ` 
-      : '';
-    
+    if (fondDeFrigo)
+      additionalRequirements.push(
+        "en utilisant le minimum d'ingrédients et avec des substitutions possibles pour les ingrédients courants"
+      );
+    if (pressé)
+      additionalRequirements.push(
+        "avec un temps de préparation court, maximum 15 minutes"
+      );
+    if (léger)
+      additionalRequirements.push(
+        "avec un minimum de calories et un Nutri-Score favorable"
+      );
+
+    const additionalPrompt =
+      additionalRequirements.length > 0
+        ? `Contraintes supplémentaires: ${additionalRequirements.join(". ")}. `
+        : "";
+
     const prompt = `Je voudrais une recette de type ${cuisineType} avec ${ingredients.join(
       ", "
     )}. ${additionalPrompt}En retour, je veux un titre, une description, la liste des ustensiles nécessaires, la liste complète des ingrédients avec les quantités, les valeurs nutritionnelles pour 100g (kcal, protéines, glucides, lipides, fibres), le Nutri-Score, le temps de préparation, le temps total, et les instructions pour la réalisation de la recette par étape. Les instructions doivent être regroupées par type de travail (préparation, cuisson, montage, etc.), et chaque groupe doit avoir un titre. Formate le résultat en JSON avec la structure suivante :
@@ -166,9 +187,9 @@ const RecipeForm = () => {
     }`;
 
     try {
-      setLoadingMessage("Communication avec le chef virtuel...");
+      setLoadingMessage("Communication avec le Chef Frigo...");
       setProgress(30);
-      
+
       const response = await axios.post(
         "https://api.mistral.ai/v1/chat/completions",
         {
@@ -220,7 +241,9 @@ const RecipeForm = () => {
         console.error("Erreur lors de la requête à l'API :", error);
         toast({
           title: "Erreur",
-          description: error.message || "Une erreur est survenue lors de la génération de la recette.",
+          description:
+            error.message ||
+            "Une erreur est survenue lors de la génération de la recette.",
           variant: "destructive",
         });
       }
@@ -243,25 +266,26 @@ const RecipeForm = () => {
 
         <Card className="card-elevation border-culinary-primary/20">
           <CardHeader className="pb-3">
-            <h2 className="text-xl font-medium text-center">Quels ingrédients avez-vous ?</h2>
+            <h2 className="text-xl font-medium text-center">
+              Que voulez-vous cuisiner ?
+            </h2>
           </CardHeader>
-          
+
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Vos ingrédients</label>
-                <IngredientInput 
-                  ingredients={ingredients} 
-                  setIngredients={setIngredients} 
+                <label className="text-sm font-medium">Vos ingrédients :</label>
+                <IngredientInput
+                  ingredients={ingredients}
+                  setIngredients={setIngredients}
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Type de cuisine</label>
-                <Select 
-                  value={cuisineType} 
-                  onValueChange={setCuisineType}
-                >
+                <label className="text-sm font-medium">
+                  Votre type de cuisine :
+                </label>
+                <Select value={cuisineType} onValueChange={setCuisineType}>
                   <SelectTrigger>
                     <SelectValue placeholder="Sélectionnez un style culinaire" />
                   </SelectTrigger>
@@ -276,33 +300,41 @@ const RecipeForm = () => {
               </div>
 
               <div className="space-y-3">
-                <label className="text-sm font-medium">Options</label>
+                <label className="text-sm font-medium">Vos options :</label>
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="fondDeFrigo" 
-                      checked={fondDeFrigo} 
-                      onCheckedChange={(checked) => setFondDeFrigo(checked === true)}
+                    <Checkbox
+                      id="fondDeFrigo"
+                      checked={fondDeFrigo}
+                      onCheckedChange={(checked) =>
+                        setFondDeFrigo(checked === true)
+                      }
                     />
-                    <Label htmlFor="fondDeFrigo" className="cursor-pointer">Fond de frigo</Label>
+                    <Label htmlFor="fondDeFrigo" className="cursor-pointer">
+                      Fond de frigo
+                    </Label>
                   </div>
-                  
+
                   <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="presse" 
-                      checked={pressé} 
+                    <Checkbox
+                      id="presse"
+                      checked={pressé}
                       onCheckedChange={(checked) => setPressé(checked === true)}
                     />
-                    <Label htmlFor="presse" className="cursor-pointer">Je suis pressé!</Label>
+                    <Label htmlFor="presse" className="cursor-pointer">
+                      Je suis pressé!
+                    </Label>
                   </div>
-                  
+
                   <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="leger" 
-                      checked={léger} 
+                    <Checkbox
+                      id="leger"
+                      checked={léger}
                       onCheckedChange={(checked) => setLéger(checked === true)}
                     />
-                    <Label htmlFor="leger" className="cursor-pointer">Manger léger</Label>
+                    <Label htmlFor="leger" className="cursor-pointer">
+                      Manger léger
+                    </Label>
                   </div>
                 </div>
               </div>
@@ -310,11 +342,13 @@ const RecipeForm = () => {
               {loading && (
                 <div className="space-y-2 py-2">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">{loadingMessage}</span>
-                    <Button 
-                      type="button" 
-                      size="icon" 
-                      variant="ghost" 
+                    <span className="text-sm text-muted-foreground">
+                      {loadingMessage}
+                    </span>
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="ghost"
                       onClick={handleCancelRequest}
                       className="h-6 w-6"
                     >
@@ -324,10 +358,10 @@ const RecipeForm = () => {
                   <Progress value={progress} className="h-2" />
                 </div>
               )}
-              
-              <Button 
-                type="submit" 
-                className="w-full bg-culinary-primary hover:bg-culinary-primary/90" 
+
+              <Button
+                type="submit"
+                className="w-full bg-culinary-primary hover:bg-culinary-primary/90"
                 disabled={loading}
               >
                 {loading ? "Génération en cours..." : "Générer ma recette"}
