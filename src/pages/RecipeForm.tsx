@@ -127,10 +127,15 @@ const RecipeForm = () => {
 
     // Construct additional requirements based on checkboxes
     const additionalRequirements = [];
-    if (fondDeFrigo)
+    if (fondDeFrigo) {
       additionalRequirements.push(
         "en utilisant le minimum d'ingrédients et avec des substitutions possibles pour les ingrédients courants"
       );
+    } else {
+      additionalRequirements.push(
+        "en incluant des ingrédients variés pour une recette plus élaborée (par exemple en proposant du poisson ou de la viande si je n'ai listé que des légumes ou en proposant un accompagnement si je n'ai listé que de la viande ou du poisson)"
+      );
+    }
     if (pressé)
       additionalRequirements.push(
         "avec un temps de préparation court, maximum 15 minutes"
@@ -160,7 +165,7 @@ const RecipeForm = () => {
         ...
       ],
       "valeurs_nutritionnelles": {
-        "kcal": "Nombre de kcal pour 100g",
+        "calories": "Nombre de kcal pour 100g",
         "proteines": "Protéines en grammes pour 100g",
         "glucides": "Glucides en grammes pour 100g",
         "lipides": "Lipides en grammes pour 100g",
