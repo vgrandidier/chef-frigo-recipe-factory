@@ -315,7 +315,7 @@ const RecipeForm = () => {
                         setFondDeFrigo(checked === true)
                       }
                     />
-                    <Label htmlFor="fondDeFrigo" className="cursor-pointer">
+                    <Label htmlFor="fondDeFrigo" className="cursor-pointer font-normal">
                       Fond de frigo
                     </Label>
                   </div>
@@ -326,7 +326,7 @@ const RecipeForm = () => {
                       checked={pressé}
                       onCheckedChange={(checked) => setPressé(checked === true)}
                     />
-                    <Label htmlFor="presse" className="cursor-pointer">
+                    <Label htmlFor="presse" className="cursor-pointer font-normal">
                       Je suis pressé!
                     </Label>
                   </div>
@@ -337,7 +337,7 @@ const RecipeForm = () => {
                       checked={léger}
                       onCheckedChange={(checked) => setLéger(checked === true)}
                     />
-                    <Label htmlFor="leger" className="cursor-pointer">
+                    <Label htmlFor="leger" className="cursor-pointer font-normal">
                       Manger léger
                     </Label>
                   </div>

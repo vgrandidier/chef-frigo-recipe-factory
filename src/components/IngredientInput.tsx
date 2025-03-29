@@ -43,7 +43,7 @@ export function IngredientInput({ ingredients, setIngredients }: IngredientInput
         value={inputValue}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        className="w-full"
+        className="w-full text-sm"
       />
       
       <div className="flex flex-wrap gap-2 mt-2">
