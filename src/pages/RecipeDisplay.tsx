@@ -28,7 +28,7 @@ interface RecipeUstensil {
 }
 
 interface RecipeNutritionalValues {
-  kcal: string;
+  calories: string;  // Modifié de kcal à calories
   proteines: string;
   glucides: string;
   lipides: string;
@@ -188,7 +188,7 @@ const RecipeDisplay = () => {
                     <div className="grid grid-cols-2 gap-2">
                       <div className="flex justify-between">
                         <span>Calories:</span>
-                        <span className="font-medium">{recipe.valeurs_nutritionnelles.kcal}</span>
+                        <span className="font-medium">{recipe.valeurs_nutritionnelles.calories}</span>
                       </div>
                       <div className="flex justify-between">
                         <span>Protéines:</span>
@@ -267,7 +267,7 @@ const RecipeDisplay = () => {
                     <div className="grid grid-cols-2 gap-2 text-sm">
                       <div className="flex justify-between">
                         <span>Calories:</span>
-                        <span className="font-medium">{recipe.valeurs_nutritionnelles.kcal}</span>
+                        <span className="font-medium">{recipe.valeurs_nutritionnelles.calories}</span>
                       </div>
                       <div className="flex justify-between">
                         <span>Protéines:</span>
