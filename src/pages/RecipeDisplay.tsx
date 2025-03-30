@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useEffect, useState } from "react-router-dom";
 import { Logo } from "@/components/Logo";
 import { ActionIcons } from "@/components/ActionIcons";
 import {
@@ -18,8 +18,86 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ChevronDown, ChevronUp } from "lucide-react";
-import { useState } from "react";
+import { ChevronDown, ChevronUp, ImageIcon } from "lucide-react";
+
+// Composant pour récupérer et afficher l'image via Mistral API
+const RecipeImage = ({ title }) => {
+  const [imageBase64, setImageBase64] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const apiKey = 'bX7PSeGLmU5Qh6JYnvr2tzvESPhiORAH'; // Votre clé API
+
+  useEffect(() => {
+    const fetchImage = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch('https://api.mistral.com/v1/generate-image', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify({
+            prompt: title || 'Plat gastronomique',
+            style: 'photo de recette de magazine culinaire',
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Erreur lors de la récupération de l\'image');
+        }
+
+        const data = await response.json();
+        setImageBase64(data.imageBase64);
+      } catch (error) {
+        console.error('Erreur:', error);
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (title) {
+      fetchImage();
+    }
+  }, [title, apiKey]);
+
+  if (loading) {
+    return (
+      <div className="w-full h-56 md:h-80 bg-culinary-light/30 rounded-lg flex flex-col items-center justify-center">
+        <div className="animate-pulse text-culinary-primary mb-2">
+          <ImageIcon size={32} />
+        </div>
+        <p className="text-sm text-culinary-primary/70">Génération de l'image en cours...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full h-40 bg-culinary-light/20 rounded-lg flex items-center justify-center">
+        <p className="text-sm text-gray-500">Impossible de charger l'image</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-full overflow-hidden rounded-lg mb-4">
+      {imageBase64 ? (
+        <img 
+          src={`data:image/png;base64,${imageBase64}`} 
+          alt={title} 
+          className="w-full object-cover rounded-lg"
+          style={{ maxHeight: '400px' }}
+        />
+      ) : (
+        <div className="w-full h-40 bg-culinary-light/20 rounded-lg flex items-center justify-center">
+          <p className="text-sm text-gray-500">Aucune image disponible</p>
+        </div>
+      )}
+    </div>
+  );
+};
 
 interface RecipeIngredient {
   nom: string;
@@ -31,7 +109,7 @@ interface RecipeUstensil {
 }
 
 interface RecipeNutritionalValues {
-  calories: string; // Modifié de kcal à calories
+  calories: string; 
   proteines: string;
   glucides: string;
   lipides: string;
@@ -110,6 +188,11 @@ const RecipeDisplay = () => {
         </div>
 
         <Card className="card-elevation border-culinary-primary/20 mb-6 md:mb-8 print:shadow-none print:border-none">
+          {/* Affichage de l'image Mistral en haut de la carte */}
+          <div className="px-4 pt-4 md:px-6 md:pt-6">
+            <RecipeImage title={recipe.titre} />
+          </div>
+          
           <CardHeader className="pb-2 md:pb-3">
             <CardTitle className="text-xl md:text-3xl font-display text-culinary-dark">
               {recipe.titre}
