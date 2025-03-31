@@ -232,49 +232,16 @@ const RecipeForm = () => {
         throw new Error("Impossible de lire la recette reçue.");
       }
 
-      // Génération de l'image avec Mistral
-      setLoadingMessage("Chef Frigo prend une photo...");
+      // Récupération de l'image locale basée sur le type de cuisine
+      setLoadingMessage("Chef Frigo choisit la présentation...");
       setProgress(80);
 
-      let imageData = "";
-      // Modifiez cette partie
-      try {
-        const imageResponse = await axios.post(
-          "https://api.mistral.ai/v1/images/generations", // URL corrigée
-          {
-            model: "mistral-dalle3", // Spécifiez le modèle de génération d'image
-            prompt: `Plat de cuisine ${cuisineType}: ${recipeData.titre}`, // Prompt amélioré
-            n: 1, // Génère une seule image
-            size: "1024x1024", // Taille standard
-          },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${apiKey}`,
-            },
-            cancelToken: source.token,
-          }
-        );
+      // Utiliser une image locale correspondant au type de cuisine
+      const imagePath = `./src/pages/img/${cuisineType}.jpg`;
 
-        if (
-          imageResponse.data &&
-          imageResponse.data.data &&
-          imageResponse.data.data.length > 0
-        ) {
-          // La réponse contient probablement une URL ou des données base64 selon l'API
-          imageData =
-            imageResponse.data.data[0].url ||
-            imageResponse.data.data[0].b64_json;
-        }
-      } catch (imageError) {
-        console.error("Erreur lors de la génération de l'image:", imageError);
-        // On continue même si l'image échoue
-      }
-
-      setProgress(100);
-      // Attendre que l'image soit générée avant de naviguer
+      // Naviguer vers la page de recette avec les données et le chemin de l'image
       navigate("/recipe", {
-        state: { recipe: recipeData, recipeImage: imageData },
+        state: { recipe: recipeData, recipeImage: imagePath },
       });
     } catch (error: any) {
       if (axios.isCancel(error)) {
