@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Share2, Clock, Award } from "lucide-react";
@@ -9,6 +8,7 @@ import { MobileNavigation } from "@/components/MobileNavigation";
 import { Logo } from "@/components/Logo";
 import { useToast } from "@/components/ui/use-toast";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import NutriScore from "@/components/NutriScore";
 
 interface RecipeIngredient {
   nom: string;
@@ -51,7 +51,6 @@ const RecipeDisplay = () => {
   const { toast } = useToast();
   const [shareOpen, setShareOpen] = useState(false);
 
-  // Si pas de recette, redirection vers le formulaire
   if (!state || !state.recipe) {
     navigate("/");
     return null;
@@ -98,7 +97,6 @@ const RecipeDisplay = () => {
       </div>
 
       <div className="mobile-content">
-        {/* Image de la recette */}
         <div className="relative h-60 w-full">
           <img 
             src={recipeImage} 
@@ -110,7 +108,6 @@ const RecipeDisplay = () => {
           </div>
         </div>
 
-        {/* Informations clés */}
         <div className="flex justify-between px-4 py-3 border-b">
           <div className="flex flex-col items-center">
             <Clock size={16} className="mb-1 text-gray-600" />
@@ -125,11 +122,12 @@ const RecipeDisplay = () => {
           <div className="flex flex-col items-center">
             <Award size={16} className="mb-1 text-gray-600" />
             <span className="text-xs font-medium">Nutriscore</span>
-            <span className="text-sm">{recipe.nutriscore}</span>
+            <div className="mt-1">
+              <NutriScore score={recipe.nutriscore} size="sm" />
+            </div>
           </div>
         </div>
 
-        {/* Tabs */}
         <Tabs defaultValue="ingredients" className="w-full">
           <TabsList className="mobile-tabs">
             <TabsTrigger value="ingredients" className="mobile-tab">
@@ -143,9 +141,7 @@ const RecipeDisplay = () => {
             </TabsTrigger>
           </TabsList>
           
-          {/* Contenu des tabs */}
           <div className="p-4">
-            {/* Tab Ingrédients */}
             <TabsContent value="ingredients" className="mt-0 space-y-4">
               <div>
                 <h3 className="text-lg font-medium mb-3">Ingrédients</h3>
@@ -180,7 +176,6 @@ const RecipeDisplay = () => {
               </div>
             </TabsContent>
             
-            {/* Tab Préparation */}
             <TabsContent value="preparation" className="mt-0">
               <h3 className="text-lg font-medium mb-3">Instructions</h3>
               {Object.entries(recipe.instructions).map(
@@ -209,9 +204,12 @@ const RecipeDisplay = () => {
               )}
             </TabsContent>
             
-            {/* Tab Nutrition */}
             <TabsContent value="nutrition" className="mt-0">
               <h3 className="text-lg font-medium mb-3">Valeurs Nutritionnelles</h3>
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-xs text-gray-500">Nutriscore:</span>
+                <NutriScore score={recipe.nutriscore} size="md" />
+              </div>
               <p className="text-xs text-gray-500 mb-4">Pour 100g</p>
               
               <div className="space-y-4">
@@ -241,7 +239,6 @@ const RecipeDisplay = () => {
         </Tabs>
       </div>
 
-      {/* Share Popover */}
       <Popover open={shareOpen} onOpenChange={setShareOpen}>
         <PopoverContent className="w-56 p-2" align="center">
           <div className="grid gap-2">
@@ -274,7 +271,6 @@ const RecipeDisplay = () => {
         </PopoverContent>
       </Popover>
 
-      {/* Modified Footer with Share Button */}
       <MobileNavigation 
         showShareButton={true}
         onShare={handleShare}
