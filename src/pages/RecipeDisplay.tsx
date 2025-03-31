@@ -19,31 +19,6 @@ import {
 import { ChevronDown, ChevronUp, ImageIcon } from "lucide-react";
 import { useState } from "react";
 
-// Composant simplifié pour afficher l'image déjà générée
-const RecipeImage = ({ imageBase64, title }) => {
-  if (!imageBase64) {
-    return (
-      <div className="w-full h-40 bg-culinary-light/20 rounded-lg flex items-center justify-center">
-        <div className="flex flex-col items-center">
-          <ImageIcon size={24} className="text-gray-400 mb-2" />
-          <p className="text-sm text-gray-500">Aucune image disponible</p>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="w-full overflow-hidden rounded-lg mb-4">
-      <img
-        src={`data:image/png;base64,${imageBase64}`}
-        alt={title}
-        className="w-full object-cover rounded-lg"
-        style={{ maxHeight: "400px" }}
-      />
-    </div>
-  );
-};
-
 interface RecipeIngredient {
   nom: string;
   quantite: string;
@@ -136,7 +111,7 @@ const RecipeDisplay = () => {
         <Card className="card-elevation border-culinary-primary/20 mb-6 md:mb-8 print:shadow-none print:border-none">
           {/* Affichage de l'image déjà générée */}
           <div className="px-4 pt-4 md:px-6 md:pt-6">
-            <RecipeImage imageBase64={recipeImage} title={recipe.titre} />
+            <img src={recipeImage} />
           </div>
 
           <CardHeader className="pb-2 md:pb-3">
