@@ -26,9 +26,7 @@ import { Label } from "@/components/ui/label";
 const CUISINE_TYPES = [
   "Africaine",
   "Antillaise",
-  "Asiatique",
   "Chinoise",
-  "Créole",
   "Cubaine",
   "Espagnole",
   "Française",
@@ -38,11 +36,8 @@ const CUISINE_TYPES = [
   "Japonaise",
   "Méditerranéenne",
   "Mexicaine",
-  "Portugaise",
-  "Québécoise",
   "Scandinave",
   "Thaïe",
-  "Vietnamienne",
 ];
 
 const RecipeForm = () => {
@@ -237,7 +232,7 @@ const RecipeForm = () => {
       setProgress(80);
 
       // Utiliser une image locale correspondant au type de cuisine
-      const imagePath = `./src/pages/img/${cuisineType}.jpg`;
+      const imagePath = `/images/${cuisineType}.jpg`;
 
       // Naviguer vers la page de recette avec les données et le chemin de l'image
       navigate("/recipe", {
