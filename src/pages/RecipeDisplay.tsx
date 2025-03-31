@@ -124,8 +124,8 @@ const RecipeDisplay = () => {
           </div>
           <div className="flex flex-col items-center">
             <Award size={16} className="mb-1 text-gray-600" />
-            <span className="text-xs font-medium">Difficulté</span>
-            <span className="text-sm">Moyenne</span>
+            <span className="text-xs font-medium">Nutriscore</span>
+            <span className="text-sm">{recipe.nutriscore}</span>
           </div>
         </div>
 
