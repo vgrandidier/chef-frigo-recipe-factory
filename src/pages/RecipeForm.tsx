@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -290,7 +289,7 @@ const RecipeForm = () => {
 
             <div className="space-y-3">
               <label className="text-sm font-medium">Options :</label>
-              
+
               <div className="grid grid-cols-3 gap-3">
                 <div className="mobile-card p-3 flex flex-col items-center justify-center">
                   <Refrigerator className="h-6 w-6 text-primary mb-2" />
@@ -304,10 +303,10 @@ const RecipeForm = () => {
                     className="h-5 w-5"
                   />
                 </div>
-                
+
                 <div className="mobile-card p-3 flex flex-col items-center justify-center">
                   <Clock className="h-6 w-6 text-primary mb-2" />
-                  <span className="text-xs mb-2">Pressé</span>
+                  <span className="text-xs mb-2">Je suis pressé</span>
                   <Checkbox
                     id="presse"
                     checked={pressé}
@@ -315,10 +314,10 @@ const RecipeForm = () => {
                     className="h-5 w-5"
                   />
                 </div>
-                
+
                 <div className="mobile-card p-3 flex flex-col items-center justify-center">
                   <HeartPulse className="h-6 w-6 text-primary mb-2" />
-                  <span className="text-xs mb-2">Léger</span>
+                  <span className="text-xs mb-2">Manger léger</span>
                   <Checkbox
                     id="leger"
                     checked={léger}
