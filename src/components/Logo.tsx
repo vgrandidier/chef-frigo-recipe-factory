@@ -15,20 +15,20 @@ export function Logo({ size = "md", className }: LogoProps) {
   };
 
   const iconSize = {
-    sm: 20,
+    sm: 24,
     md: 28,
     lg: 36
   };
 
   return (
-    <div className={cn("flex items-center gap-2", className)}>
+    <div className={cn("flex items-center gap-1.5", className)}>
       <ChefHat 
         size={iconSize[size]} 
-        className="text-culinary-primary" 
+        className="text-primary" 
       />
       <h1 className={cn("app-logo-text", sizeClasses[size])}>
-        <span className="text-culinary-primary">Chef</span>
-        <span className="text-culinary-secondary">Frigo</span>
+        <span className="text-primary">Chef</span>
+        <span className="text-gray-700">Frigo</span>
       </h1>
     </div>
   );

@@ -1,23 +1,11 @@
-import { useLocation, useNavigate } from "react-router-dom";
-import { Logo } from "@/components/Logo";
-import { ActionIcons } from "@/components/ActionIcons";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { useIsMobile } from "@/hooks/use-mobile";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { ChevronDown, ChevronUp, ImageIcon } from "lucide-react";
+
 import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { ChevronLeft, Heart, Clock, Award, Share2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { MobileNavigation } from "@/components/MobileNavigation";
 
 interface RecipeIngredient {
   nom: string;
@@ -50,15 +38,14 @@ interface Recipe {
 
 interface LocationState {
   recipe: Recipe;
-  recipeImage: string; // Maintenant recipeImage est passé directement
+  recipeImage: string;
 }
 
 const RecipeDisplay = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const state = location.state as LocationState;
-  const isMobile = useIsMobile();
-  const [openNutrition, setOpenNutrition] = useState(false);
+  const [favorited, setFavorited] = useState(false);
 
   // Si pas de recette, redirection vers le formulaire
   if (!state || !state.recipe) {
@@ -91,316 +78,188 @@ const RecipeDisplay = () => {
   };
 
   return (
-    <div className="min-h-screen gradient-bg py-4 px-3 md:py-6 md:px-4 print:p-0 print:bg-white">
-      <div className="recipe-container print-friendly">
-        <div className="flex justify-between items-center mb-4 md:mb-6 no-print">
-          <Logo size="md" />
-          <ActionIcons
-            url={window.location.href}
-            onPrint={handlePrint}
-            onBack={handleBack}
-          />
-        </div>
-
-        {/* Version d'impression uniquement visible lors de l'impression */}
-        <div className="hidden print:block print-only mb-8">
-          <Logo size="sm" className="mb-2" />
-          <p className="text-sm text-gray-600">www.chef-frigo.com</p>
-        </div>
-
-        <Card className="card-elevation border-culinary-primary/20 mb-6 md:mb-8 print:shadow-none print:border-none">
-          {/* Affichage de l'image déjà générée */}
-          <div className="px-4 pt-4 md:px-6 md:pt-6">
-            <img src={recipeImage} />
-          </div>
-
-          <CardHeader className="pb-2 md:pb-3">
-            <CardTitle className="text-xl md:text-3xl font-display text-culinary-dark">
-              {recipe.titre}
-            </CardTitle>
-            <CardDescription className="text-sm md:text-base mt-1 md:mt-2">
-              {recipe.description}
-            </CardDescription>
-          </CardHeader>
-
-          <CardContent>
-            <div className="flex flex-wrap gap-2 md:gap-4 mb-4 md:mb-6">
-              <div className="bg-culinary-light/50 rounded-md px-3 py-1.5 flex items-center text-xs md:text-sm">
-                <span className="font-medium">Préparation: </span>
-                <span className="ml-1">{recipe.temps_preparation}</span>
-              </div>
-              <div className="bg-culinary-light/50 rounded-md px-3 py-1.5 flex items-center text-xs md:text-sm">
-                <span className="font-medium">Total: </span>
-                <span className="ml-1">{recipe.temps_total}</span>
-              </div>
-              <div className="bg-culinary-light/50 rounded-md px-3 py-1.5 flex items-center text-xs md:text-sm">
-                <span className="font-medium mr-1">Nutri-Score: </span>
-                <Badge
-                  className={`${getNutriScoreBadge(
-                    recipe.nutriscore
-                  )} text-white`}
-                >
-                  {recipe.nutriscore}
-                </Badge>
-              </div>
-            </div>
-
-            {isMobile ? (
-              // Vue mobile avec sections collapsibles
-              <div className="space-y-4">
-                {/* Section ingrédients */}
-                <Collapsible className="border rounded-md overflow-hidden">
-                  <CollapsibleTrigger className="flex justify-between items-center w-full p-3 bg-culinary-light/20">
-                    <h3 className="text-md font-medium text-culinary-primary">
-                      Ingrédients
-                    </h3>
-                    <ChevronDown className="h-4 w-4 text-culinary-primary collapsible-icon" />
-                  </CollapsibleTrigger>
-                  <CollapsibleContent className="p-3 text-sm">
-                    <ul className="space-y-2">
-                      {recipe.ingredients.map((ingredient, index) => (
-                        <li
-                          key={`ingredient-${index}`}
-                          className="flex justify-between pb-1 border-b border-dashed border-culinary-primary/20"
-                        >
-                          <span>{ingredient.nom}</span>
-                          <span className="font-medium">
-                            {ingredient.quantite}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CollapsibleContent>
-                </Collapsible>
-
-                {/* Section ustensiles */}
-                <Collapsible className="border rounded-md overflow-hidden">
-                  <CollapsibleTrigger className="flex justify-between items-center w-full p-3 bg-culinary-light/20">
-                    <h3 className="text-md font-medium text-culinary-primary">
-                      Ustensiles
-                    </h3>
-                    <ChevronDown className="h-4 w-4 text-culinary-primary collapsible-icon" />
-                  </CollapsibleTrigger>
-                  <CollapsibleContent className="p-3 text-sm">
-                    <ul className="space-y-1">
-                      {recipe.ustensiles.map((ustensile, index) => (
-                        <li
-                          key={`ustensile-${index}`}
-                          className="flex items-center gap-2"
-                        >
-                          <span className="w-2 h-2 rounded-full bg-culinary-primary"></span>
-                          <span>{ustensile.nom}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CollapsibleContent>
-                </Collapsible>
-
-                {/* Section valeurs nutritionnelles */}
-                <Collapsible
-                  className="border rounded-md overflow-hidden"
-                  open={openNutrition}
-                  onOpenChange={setOpenNutrition}
-                >
-                  <CollapsibleTrigger className="flex justify-between items-center w-full p-3 bg-culinary-light/20">
-                    <h3 className="text-md font-medium text-culinary-primary">
-                      Valeurs Nutritionnelles
-                    </h3>
-                    {openNutrition ? (
-                      <ChevronUp className="h-4 w-4 text-culinary-primary" />
-                    ) : (
-                      <ChevronDown className="h-4 w-4 text-culinary-primary" />
-                    )}
-                  </CollapsibleTrigger>
-                  <CollapsibleContent className="p-3 text-sm">
-                    <p className="text-xs text-gray-500 mb-2">Pour 100g</p>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="flex justify-between">
-                        <span>Calories:</span>
-                        <span className="font-medium">
-                          {recipe.valeurs_nutritionnelles.calories}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Protéines:</span>
-                        <span className="font-medium">
-                          {recipe.valeurs_nutritionnelles.proteines}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Glucides:</span>
-                        <span className="font-medium">
-                          {recipe.valeurs_nutritionnelles.glucides}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Lipides:</span>
-                        <span className="font-medium">
-                          {recipe.valeurs_nutritionnelles.lipides}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Fibres:</span>
-                        <span className="font-medium">
-                          {recipe.valeurs_nutritionnelles.fibres}
-                        </span>
-                      </div>
-                    </div>
-                  </CollapsibleContent>
-                </Collapsible>
-
-                {/* Section instructions */}
-                <div className="border rounded-md overflow-hidden">
-                  <div className="p-3 bg-culinary-light/20">
-                    <h3 className="text-md font-medium text-culinary-primary">
-                      Instructions
-                    </h3>
-                  </div>
-                  <div className="p-3">
-                    {Object.entries(recipe.instructions).map(
-                      ([category, steps], categoryIndex) => (
-                        <div key={`cat-${categoryIndex}`} className="mb-4">
-                          <h4 className="font-medium text-culinary-secondary mb-2">
-                            {category}
-                          </h4>
-                          <ol className="space-y-3">
-                            {steps.map((step, stepIndex) => (
-                              <li
-                                key={`step-${categoryIndex}-${stepIndex}`}
-                                className="text-sm"
-                              >
-                                <div className="flex">
-                                  <span className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-culinary-accent/30 text-culinary-dark mr-2">
-                                    {stepIndex + 1}
-                                  </span>
-                                  <span>{step}</span>
-                                </div>
-                              </li>
-                            ))}
-                          </ol>
-                        </div>
-                      )
-                    )}
-                  </div>
-                </div>
-              </div>
-            ) : (
-              // Vue desktop (inchangée)
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div>
-                  <h3 className="text-lg font-medium mb-2 text-culinary-primary">
-                    Ingrédients
-                  </h3>
-                  <ul className="space-y-2 text-sm">
-                    {recipe.ingredients.map((ingredient, index) => (
-                      <li
-                        key={`ingredient-${index}`}
-                        className="flex justify-between pb-1 border-b border-dashed border-culinary-primary/20"
-                      >
-                        <span>{ingredient.nom}</span>
-                        <span className="font-medium">
-                          {ingredient.quantite}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <h3 className="text-lg font-medium mb-2 mt-6 text-culinary-primary">
-                    Ustensiles
-                  </h3>
-                  <ul className="space-y-1 text-sm">
-                    {recipe.ustensiles.map((ustensile, index) => (
-                      <li
-                        key={`ustensile-${index}`}
-                        className="flex items-center gap-2"
-                      >
-                        <span className="w-2 h-2 rounded-full bg-culinary-primary"></span>
-                        <span>{ustensile.nom}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <div className="mt-6 p-4 bg-culinary-light/50 rounded-md">
-                    <h3 className="text-lg font-medium mb-2 text-culinary-primary">
-                      Valeurs Nutritionnelles
-                    </h3>
-                    <p className="text-xs text-gray-500 mb-2">Pour 100g</p>
-
-                    <div className="grid grid-cols-2 gap-2 text-sm">
-                      <div className="flex justify-between">
-                        <span>Calories:</span>
-                        <span className="font-medium">
-                          {recipe.valeurs_nutritionnelles.calories}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Protéines:</span>
-                        <span className="font-medium">
-                          {recipe.valeurs_nutritionnelles.proteines}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Glucides:</span>
-                        <span className="font-medium">
-                          {recipe.valeurs_nutritionnelles.glucides}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Lipides:</span>
-                        <span className="font-medium">
-                          {recipe.valeurs_nutritionnelles.lipides}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Fibres:</span>
-                        <span className="font-medium">
-                          {recipe.valeurs_nutritionnelles.fibres}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-medium mb-3 text-culinary-primary">
-                    Instructions
-                  </h3>
-                  <ScrollArea className="h-[500px] pr-4 print:h-auto">
-                    {Object.entries(recipe.instructions).map(
-                      ([category, steps], categoryIndex) => (
-                        <div key={`cat-${categoryIndex}`} className="mb-6">
-                          <h4 className="font-medium text-culinary-secondary mb-2">
-                            {category}
-                          </h4>
-                          <ol className="space-y-3">
-                            {steps.map((step, stepIndex) => (
-                              <li
-                                key={`step-${categoryIndex}-${stepIndex}`}
-                                className="text-sm"
-                              >
-                                <div className="flex">
-                                  <span className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-culinary-accent/30 text-culinary-dark mr-3">
-                                    {stepIndex + 1}
-                                  </span>
-                                  <span>{step}</span>
-                                </div>
-                              </li>
-                            ))}
-                          </ol>
-                        </div>
-                      )
-                    )}
-                  </ScrollArea>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <div className="text-center text-sm text-gray-500 no-print">
-          Une création de Chef Frigo - Régalez-vous !
-        </div>
+    <div className="mobile-container">
+      <div className="mobile-header no-print">
+        <button onClick={handleBack} className="p-1">
+          <ChevronLeft size={24} />
+        </button>
+        <h1 className="text-lg font-medium truncate max-w-[200px]">
+          {recipe.titre}
+        </h1>
+        <button onClick={handlePrint} className="p-1">
+          <Share2 size={20} />
+        </button>
       </div>
+
+      <div className="mobile-content">
+        {/* Image de la recette */}
+        <div className="relative h-60 w-full">
+          <img 
+            src={recipeImage} 
+            alt={recipe.titre} 
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+            <h1 className="text-white text-2xl font-semibold">{recipe.titre}</h1>
+            <div className="flex items-center gap-2 mt-1">
+              <Badge className="bg-white text-black text-xs px-2">
+                {recipe.nutriscore}
+              </Badge>
+              <span className="text-white text-xs">4.8 ★★★★★</span>
+            </div>
+          </div>
+          <button 
+            className="absolute top-4 right-4 bg-white/20 backdrop-blur-md p-2 rounded-full"
+            onClick={() => setFavorited(!favorited)}
+          >
+            <Heart 
+              size={20} 
+              className={favorited ? "fill-red-500 text-red-500" : "text-white"} 
+            />
+          </button>
+        </div>
+
+        {/* Informations clés */}
+        <div className="flex justify-between px-4 py-3 border-b">
+          <div className="flex flex-col items-center">
+            <Clock size={16} className="mb-1 text-gray-600" />
+            <span className="text-xs font-medium">Préparation</span>
+            <span className="text-sm">{recipe.temps_preparation}</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <Clock size={16} className="mb-1 text-gray-600" />
+            <span className="text-xs font-medium">Total</span>
+            <span className="text-sm">{recipe.temps_total}</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <Award size={16} className="mb-1 text-gray-600" />
+            <span className="text-xs font-medium">Nutri-Score</span>
+            <Badge className={`${getNutriScoreBadge(recipe.nutriscore)} text-white text-xs`}>
+              {recipe.nutriscore}
+            </Badge>
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <Tabs defaultValue="ingredients" className="w-full">
+          <TabsList className="mobile-tabs">
+            <TabsTrigger value="ingredients" className="mobile-tab">
+              Ingrédients
+            </TabsTrigger>
+            <TabsTrigger value="preparation" className="mobile-tab">
+              Préparation
+            </TabsTrigger>
+            <TabsTrigger value="nutrition" className="mobile-tab">
+              Nutrition
+            </TabsTrigger>
+          </TabsList>
+          
+          {/* Contenu des tabs */}
+          <div className="p-4">
+            {/* Tab Ingrédients */}
+            <TabsContent value="ingredients" className="mt-0 space-y-4">
+              <div>
+                <h3 className="text-lg font-medium mb-3">Ingrédients</h3>
+                <ul className="space-y-3">
+                  {recipe.ingredients.map((ingredient, index) => (
+                    <li
+                      key={`ingredient-${index}`}
+                      className="flex justify-between items-center pb-2 border-b border-gray-100"
+                    >
+                      <span>{ingredient.nom}</span>
+                      <span className="font-medium text-sm text-gray-700">
+                        {ingredient.quantite}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              
+              <div>
+                <h3 className="text-lg font-medium mb-3">Ustensiles</h3>
+                <div className="grid grid-cols-2 gap-2">
+                  {recipe.ustensiles.map((ustensile, index) => (
+                    <div
+                      key={`ustensile-${index}`}
+                      className="flex items-center gap-2 bg-gray-50 rounded-xl p-2"
+                    >
+                      <span className="w-2 h-2 rounded-full bg-primary"></span>
+                      <span className="text-sm">{ustensile.nom}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </TabsContent>
+            
+            {/* Tab Préparation */}
+            <TabsContent value="preparation" className="mt-0">
+              <h3 className="text-lg font-medium mb-3">Instructions</h3>
+              {Object.entries(recipe.instructions).map(
+                ([category, steps], categoryIndex) => (
+                  <div key={`cat-${categoryIndex}`} className="mb-6">
+                    <h4 className="font-medium text-primary mb-3">
+                      {category}
+                    </h4>
+                    <ol className="space-y-4">
+                      {steps.map((step, stepIndex) => (
+                        <li
+                          key={`step-${categoryIndex}-${stepIndex}`}
+                          className="text-sm"
+                        >
+                          <div className="flex">
+                            <span className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary mr-3">
+                              {stepIndex + 1}
+                            </span>
+                            <span>{step}</span>
+                          </div>
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+                )
+              )}
+            </TabsContent>
+            
+            {/* Tab Nutrition */}
+            <TabsContent value="nutrition" className="mt-0">
+              <h3 className="text-lg font-medium mb-3">Valeurs Nutritionnelles</h3>
+              <p className="text-xs text-gray-500 mb-4">Pour 100g</p>
+              
+              <div className="space-y-4">
+                <div className="bg-gray-50 p-3 rounded-xl flex justify-between items-center">
+                  <span className="font-medium">Calories</span>
+                  <span>{recipe.valeurs_nutritionnelles.calories}</span>
+                </div>
+                <div className="bg-gray-50 p-3 rounded-xl flex justify-between items-center">
+                  <span className="font-medium">Protéines</span>
+                  <span>{recipe.valeurs_nutritionnelles.proteines}</span>
+                </div>
+                <div className="bg-gray-50 p-3 rounded-xl flex justify-between items-center">
+                  <span className="font-medium">Glucides</span>
+                  <span>{recipe.valeurs_nutritionnelles.glucides}</span>
+                </div>
+                <div className="bg-gray-50 p-3 rounded-xl flex justify-between items-center">
+                  <span className="font-medium">Lipides</span>
+                  <span>{recipe.valeurs_nutritionnelles.lipides}</span>
+                </div>
+                <div className="bg-gray-50 p-3 rounded-xl flex justify-between items-center">
+                  <span className="font-medium">Fibres</span>
+                  <span>{recipe.valeurs_nutritionnelles.fibres}</span>
+                </div>
+                
+                <div className="mt-6 flex items-center justify-center">
+                  <span className="text-sm mr-2">Nutri-Score:</span>
+                  <Badge className={`${getNutriScoreBadge(recipe.nutriscore)} text-white px-3 py-1`}>
+                    {recipe.nutriscore}
+                  </Badge>
+                </div>
+              </div>
+            </TabsContent>
+          </div>
+        </Tabs>
+      </div>
+
+      <MobileNavigation />
     </div>
   );
 };

@@ -1,12 +1,7 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -19,9 +14,10 @@ import { IngredientInput } from "@/components/IngredientInput";
 import { Logo } from "@/components/Logo";
 import { useToast } from "@/components/ui/use-toast";
 import { Progress } from "@/components/ui/progress";
-import { X } from "lucide-react";
+import { X, Utensils, Clock, HeartPulse } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { MobileNavigation } from "@/components/MobileNavigation";
 
 const CUISINE_TYPES = [
   "Africaine",
@@ -265,130 +261,115 @@ const RecipeForm = () => {
   };
 
   return (
-    <div className="min-h-screen gradient-bg py-8 px-4 sm:px-6">
-      <div className="max-w-md mx-auto">
-        <div className="text-center mb-8">
-          <Logo size="lg" className="justify-center mb-4" />
-          <p className="text-culinary-dark/80 text-sm md:text-base">
-            Transformez vos ingrédients en délicieuses recettes personnalisées
-          </p>
-        </div>
-
-        <Card className="card-elevation border-culinary-primary/20">
-          <CardHeader className="pb-3">
-            <h2 className="text-xl font-medium text-center">
-              Que voulez-vous cuisiner ?
-            </h2>
-          </CardHeader>
-
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Vos ingrédients :</label>
-                <IngredientInput
-                  ingredients={ingredients}
-                  setIngredients={setIngredients}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium">
-                  Votre type de cuisine :
-                </label>
-                <Select value={cuisineType} onValueChange={setCuisineType}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionnez un style culinaire" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {CUISINE_TYPES.map((type) => (
-                      <SelectItem key={type} value={type}>
-                        {type}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-3">
-                <label className="text-sm font-medium">Vos options :</label>
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="fondDeFrigo"
-                      checked={fondDeFrigo}
-                      onCheckedChange={(checked) =>
-                        setFondDeFrigo(checked === true)
-                      }
-                    />
-                    <Label
-                      htmlFor="fondDeFrigo"
-                      className="cursor-pointer font-normal"
-                    >
-                      Fond de frigo
-                    </Label>
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="presse"
-                      checked={pressé}
-                      onCheckedChange={(checked) => setPressé(checked === true)}
-                    />
-                    <Label
-                      htmlFor="presse"
-                      className="cursor-pointer font-normal"
-                    >
-                      Je suis pressé!
-                    </Label>
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="leger"
-                      checked={léger}
-                      onCheckedChange={(checked) => setLéger(checked === true)}
-                    />
-                    <Label
-                      htmlFor="leger"
-                      className="cursor-pointer font-normal"
-                    >
-                      Manger léger
-                    </Label>
-                  </div>
-                </div>
-              </div>
-
-              {loading && (
-                <div className="space-y-2 py-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">
-                      {loadingMessage}
-                    </span>
-                    <Button
-                      type="button"
-                      size="icon"
-                      variant="ghost"
-                      onClick={handleCancelRequest}
-                      className="h-6 w-6"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <Progress value={progress} className="h-2" />
-                </div>
-              )}
-
-              <Button
-                type="submit"
-                className="w-full bg-culinary-primary hover:bg-culinary-primary/90"
-                disabled={loading}
-              >
-                {loading ? "Génération en cours..." : "Générer ma recette"}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+    <div className="mobile-container">
+      <div className="mobile-header">
+        <Logo size="sm" />
+        <h1 className="text-lg font-medium">Créer une recette</h1>
+        <div className="w-8"></div> {/* Pour l'équilibre du header */}
       </div>
+
+      <div className="mobile-content">
+        <div className="p-4 space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Vos ingrédients :</label>
+              <IngredientInput
+                ingredients={ingredients}
+                setIngredients={setIngredients}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">
+                Votre type de cuisine :
+              </label>
+              <Select value={cuisineType} onValueChange={setCuisineType}>
+                <SelectTrigger className="rounded-xl border-gray-200">
+                  <SelectValue placeholder="Sélectionnez un style culinaire" />
+                </SelectTrigger>
+                <SelectContent>
+                  {CUISINE_TYPES.map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-3">
+              <label className="text-sm font-medium">Options :</label>
+              
+              <div className="grid grid-cols-3 gap-3">
+                <div className="mobile-card p-3 flex flex-col items-center justify-center">
+                  <Utensils className="h-6 w-6 text-primary mb-2" />
+                  <span className="text-xs mb-2">Fond de frigo</span>
+                  <Checkbox
+                    id="fondDeFrigo"
+                    checked={fondDeFrigo}
+                    onCheckedChange={(checked) =>
+                      setFondDeFrigo(checked === true)
+                    }
+                    className="h-5 w-5"
+                  />
+                </div>
+                
+                <div className="mobile-card p-3 flex flex-col items-center justify-center">
+                  <Clock className="h-6 w-6 text-primary mb-2" />
+                  <span className="text-xs mb-2">Pressé</span>
+                  <Checkbox
+                    id="presse"
+                    checked={pressé}
+                    onCheckedChange={(checked) => setPressé(checked === true)}
+                    className="h-5 w-5"
+                  />
+                </div>
+                
+                <div className="mobile-card p-3 flex flex-col items-center justify-center">
+                  <HeartPulse className="h-6 w-6 text-primary mb-2" />
+                  <span className="text-xs mb-2">Léger</span>
+                  <Checkbox
+                    id="leger"
+                    checked={léger}
+                    onCheckedChange={(checked) => setLéger(checked === true)}
+                    className="h-5 w-5"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {loading && (
+              <div className="space-y-2 py-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">
+                    {loadingMessage}
+                  </span>
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="ghost"
+                    onClick={handleCancelRequest}
+                    className="h-6 w-6"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+                <Progress value={progress} className="h-2" />
+              </div>
+            )}
+
+            <Button
+              type="submit"
+              className="w-full mobile-button h-12 text-base"
+              disabled={loading}
+            >
+              {loading ? "Génération en cours..." : "Générer ma recette"}
+            </Button>
+          </form>
+        </div>
+      </div>
+
+      <MobileNavigation />
     </div>
   );
 };

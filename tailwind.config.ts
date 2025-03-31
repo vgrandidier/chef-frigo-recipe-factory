@@ -26,7 +26,7 @@ export default {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				culinary: {
-          primary: '#FF6B35',   // Orange vif pour l'accent culinaire
+          primary: '#15B79E',   // Nouvelle couleur verte
           secondary: '#2EC4B6', // Turquoise pour les accents secondaires
           accent: '#FDCA40',    // Jaune pour certains surlignages
           dark: '#3A506B',      // Bleu foncé pour le texte
@@ -99,6 +99,7 @@ export default {
 				'accordion-up': 'accordion-up 0.2s ease-out'
 			},
       fontFamily: {
+        'sans': ['Inter', 'system-ui', 'sans-serif'],
         'display': ['"Playfair Display"', 'serif'],
         'lobster': ['Lobster', 'cursive'],
       }
