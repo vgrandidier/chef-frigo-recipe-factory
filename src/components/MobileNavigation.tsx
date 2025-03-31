@@ -1,8 +1,13 @@
 
 import { useNavigate, useLocation } from "react-router-dom";
-import { Home, Search, Heart, User, Plus } from "lucide-react";
+import { Home, Share2 } from "lucide-react";
 
-export function MobileNavigation() {
+interface MobileNavigationProps {
+  showShareButton?: boolean;
+  onShare?: () => void;
+}
+
+export function MobileNavigation({ showShareButton = false, onShare }: MobileNavigationProps) {
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -18,29 +23,15 @@ export function MobileNavigation() {
         <span>Accueil</span>
       </button>
       
-      <button className="mobile-nav-item">
-        <Search className="mobile-nav-icon" />
-        <span>Rechercher</span>
-      </button>
-      
-      <div className="relative">
+      {showShareButton && onShare && (
         <button 
-          className="mobile-fab absolute -top-8 left-1/2 transform -translate-x-1/2"
-          onClick={() => navigate('/')}
+          className="mobile-nav-item"
+          onClick={onShare}
         >
-          <Plus size={24} />
+          <Share2 className="mobile-nav-icon" />
+          <span>Partager</span>
         </button>
-      </div>
-      
-      <button className="mobile-nav-item">
-        <Heart className="mobile-nav-icon" />
-        <span>Favoris</span>
-      </button>
-      
-      <button className="mobile-nav-item">
-        <User className="mobile-nav-icon" />
-        <span>Profil</span>
-      </button>
+      )}
     </div>
   );
 }

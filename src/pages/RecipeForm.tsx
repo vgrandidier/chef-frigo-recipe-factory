@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -16,7 +15,6 @@ import { useToast } from "@/components/ui/use-toast";
 import { Progress } from "@/components/ui/progress";
 import { X, Utensils, Clock, HeartPulse } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
 import { MobileNavigation } from "@/components/MobileNavigation";
 
 const CUISINE_TYPES = [
@@ -50,7 +48,6 @@ const RecipeForm = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Setup cancellation token
   const [cancelTokenSource, setCancelTokenSource] = useState<any>(null);
 
   useEffect(() => {
@@ -115,9 +112,8 @@ const RecipeForm = () => {
     const source = CancelToken.source();
     setCancelTokenSource(source);
 
-    const apiKey = "bX7PSeGLmU5Qh6JYnvr2tzvESPhiORAH"; // Remplacez par votre clé API
+    const apiKey = "bX7PSeGLmU5Qh6JYnvr2tzvESPhiORAH";
 
-    // Construct additional requirements based on checkboxes
     const additionalRequirements = [];
     if (fondDeFrigo) {
       additionalRequirements.push(
@@ -208,7 +204,6 @@ const RecipeForm = () => {
       const rawResponse = response.data.choices[0].message.content;
       console.log("Raw response:", rawResponse);
 
-      // Extract only the JSON part using a regular expression
       const jsonMatch = rawResponse.match(/(\{.*\})/s);
       if (!jsonMatch) {
         throw new SyntaxError("Pas de JSON valide trouvé dans la réponse.");
@@ -223,14 +218,11 @@ const RecipeForm = () => {
         throw new Error("Impossible de lire la recette reçue.");
       }
 
-      // Récupération de l'image locale basée sur le type de cuisine
       setLoadingMessage("Chef Frigo choisit la présentation...");
       setProgress(80);
 
-      // Utiliser une image locale correspondant au type de cuisine
       const imagePath = `/images/${cuisineType}.jpg`;
 
-      // Naviguer vers la page de recette avec les données et le chemin de l'image
       navigate("/recipe", {
         state: { recipe: recipeData, recipeImage: imagePath },
       });
@@ -262,10 +254,8 @@ const RecipeForm = () => {
 
   return (
     <div className="mobile-container">
-      <div className="mobile-header">
-        <Logo size="sm" />
-        <h1 className="text-lg font-medium">Créer une recette</h1>
-        <div className="w-8"></div> {/* Pour l'équilibre du header */}
+      <div className="mobile-header flex-col py-4">
+        <Logo size="md" showSlogan={true} />
       </div>
 
       <div className="mobile-content">

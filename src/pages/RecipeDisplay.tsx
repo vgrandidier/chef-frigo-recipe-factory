@@ -1,11 +1,14 @@
 
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ChevronLeft, Heart, Clock, Award, Share2 } from "lucide-react";
+import { Share2, Clock, Award } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MobileNavigation } from "@/components/MobileNavigation";
+import { Logo } from "@/components/Logo";
+import { useToast } from "@/components/ui/use-toast";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface RecipeIngredient {
   nom: string;
@@ -45,7 +48,8 @@ const RecipeDisplay = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const state = location.state as LocationState;
-  const [favorited, setFavorited] = useState(false);
+  const { toast } = useToast();
+  const [shareOpen, setShareOpen] = useState(false);
 
   // Si pas de recette, redirection vers le formulaire
   if (!state || !state.recipe) {
@@ -59,36 +63,38 @@ const RecipeDisplay = () => {
     window.print();
   };
 
-  const handleBack = () => {
-    navigate("/");
+  const handleShare = () => {
+    setShareOpen(true);
   };
 
-  // Badge variant selon le Nutri-Score
-  const getNutriScoreBadge = (score: string) => {
-    const scoreMap: Record<string, string> = {
-      A: "bg-green-500",
-      B: "bg-green-300",
-      C: "bg-yellow-300",
-      D: "bg-orange-400",
-      E: "bg-red-500",
-    };
+  const handleCopyLink = () => {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url).then(() => {
+      toast({
+        title: "Lien copié !",
+        description: "Le lien a été copié dans le presse-papier.",
+        duration: 3000,
+      });
+      setShareOpen(false);
+    });
+  };
 
-    const firstChar = score.charAt(0).toUpperCase();
-    return scoreMap[firstChar] || "bg-gray-400";
+  const shareViaEmail = () => {
+    const url = window.location.href;
+    window.open(`mailto:?subject=Une recette pour toi de ChefFrigo&body=Regarde cette recette que j'ai trouvée: ${url}`);
+    setShareOpen(false);
+  };
+
+  const shareViaWhatsapp = () => {
+    const url = window.location.href;
+    window.open(`https://api.whatsapp.com/send?text=Regarde cette recette que j'ai trouvée: ${url}`);
+    setShareOpen(false);
   };
 
   return (
     <div className="mobile-container">
       <div className="mobile-header no-print">
-        <button onClick={handleBack} className="p-1">
-          <ChevronLeft size={24} />
-        </button>
-        <h1 className="text-lg font-medium truncate max-w-[200px]">
-          {recipe.titre}
-        </h1>
-        <button onClick={handlePrint} className="p-1">
-          <Share2 size={20} />
-        </button>
+        <Logo size="sm" />
       </div>
 
       <div className="mobile-content">
@@ -101,22 +107,7 @@ const RecipeDisplay = () => {
           />
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
             <h1 className="text-white text-2xl font-semibold">{recipe.titre}</h1>
-            <div className="flex items-center gap-2 mt-1">
-              <Badge className="bg-white text-black text-xs px-2">
-                {recipe.nutriscore}
-              </Badge>
-              <span className="text-white text-xs">4.8 ★★★★★</span>
-            </div>
           </div>
-          <button 
-            className="absolute top-4 right-4 bg-white/20 backdrop-blur-md p-2 rounded-full"
-            onClick={() => setFavorited(!favorited)}
-          >
-            <Heart 
-              size={20} 
-              className={favorited ? "fill-red-500 text-red-500" : "text-white"} 
-            />
-          </button>
         </div>
 
         {/* Informations clés */}
@@ -133,10 +124,8 @@ const RecipeDisplay = () => {
           </div>
           <div className="flex flex-col items-center">
             <Award size={16} className="mb-1 text-gray-600" />
-            <span className="text-xs font-medium">Nutri-Score</span>
-            <Badge className={`${getNutriScoreBadge(recipe.nutriscore)} text-white text-xs`}>
-              {recipe.nutriscore}
-            </Badge>
+            <span className="text-xs font-medium">Difficulté</span>
+            <span className="text-sm">Moyenne</span>
           </div>
         </div>
 
@@ -166,7 +155,7 @@ const RecipeDisplay = () => {
                       key={`ingredient-${index}`}
                       className="flex justify-between items-center pb-2 border-b border-gray-100"
                     >
-                      <span>{ingredient.nom}</span>
+                      <span className="text-sm">{ingredient.nom}</span>
                       <span className="font-medium text-sm text-gray-700">
                         {ingredient.quantite}
                       </span>
@@ -197,7 +186,7 @@ const RecipeDisplay = () => {
               {Object.entries(recipe.instructions).map(
                 ([category, steps], categoryIndex) => (
                   <div key={`cat-${categoryIndex}`} className="mb-6">
-                    <h4 className="font-medium text-primary mb-3">
+                    <h4 className="font-medium text-primary mb-3 text-sm">
                       {category}
                     </h4>
                     <ol className="space-y-4">
@@ -207,7 +196,7 @@ const RecipeDisplay = () => {
                           className="text-sm"
                         >
                           <div className="flex">
-                            <span className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary mr-3">
+                            <span className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary mr-3 text-xs">
                               {stepIndex + 1}
                             </span>
                             <span>{step}</span>
@@ -227,31 +216,24 @@ const RecipeDisplay = () => {
               
               <div className="space-y-4">
                 <div className="bg-gray-50 p-3 rounded-xl flex justify-between items-center">
-                  <span className="font-medium">Calories</span>
-                  <span>{recipe.valeurs_nutritionnelles.calories}</span>
+                  <span className="font-medium text-sm">Calories</span>
+                  <span className="text-sm">{recipe.valeurs_nutritionnelles.calories}</span>
                 </div>
                 <div className="bg-gray-50 p-3 rounded-xl flex justify-between items-center">
-                  <span className="font-medium">Protéines</span>
-                  <span>{recipe.valeurs_nutritionnelles.proteines}</span>
+                  <span className="font-medium text-sm">Protéines</span>
+                  <span className="text-sm">{recipe.valeurs_nutritionnelles.proteines}</span>
                 </div>
                 <div className="bg-gray-50 p-3 rounded-xl flex justify-between items-center">
-                  <span className="font-medium">Glucides</span>
-                  <span>{recipe.valeurs_nutritionnelles.glucides}</span>
+                  <span className="font-medium text-sm">Glucides</span>
+                  <span className="text-sm">{recipe.valeurs_nutritionnelles.glucides}</span>
                 </div>
                 <div className="bg-gray-50 p-3 rounded-xl flex justify-between items-center">
-                  <span className="font-medium">Lipides</span>
-                  <span>{recipe.valeurs_nutritionnelles.lipides}</span>
+                  <span className="font-medium text-sm">Lipides</span>
+                  <span className="text-sm">{recipe.valeurs_nutritionnelles.lipides}</span>
                 </div>
                 <div className="bg-gray-50 p-3 rounded-xl flex justify-between items-center">
-                  <span className="font-medium">Fibres</span>
-                  <span>{recipe.valeurs_nutritionnelles.fibres}</span>
-                </div>
-                
-                <div className="mt-6 flex items-center justify-center">
-                  <span className="text-sm mr-2">Nutri-Score:</span>
-                  <Badge className={`${getNutriScoreBadge(recipe.nutriscore)} text-white px-3 py-1`}>
-                    {recipe.nutriscore}
-                  </Badge>
+                  <span className="font-medium text-sm">Fibres</span>
+                  <span className="text-sm">{recipe.valeurs_nutritionnelles.fibres}</span>
                 </div>
               </div>
             </TabsContent>
@@ -259,7 +241,44 @@ const RecipeDisplay = () => {
         </Tabs>
       </div>
 
-      <MobileNavigation />
+      {/* Share Popover */}
+      <Popover open={shareOpen} onOpenChange={setShareOpen}>
+        <PopoverContent className="w-56 p-2" align="center">
+          <div className="grid gap-2">
+            <Button onClick={shareViaEmail} variant="outline" className="justify-start">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+                <rect width="20" height="16" x="2" y="4" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+              </svg>
+              Email
+            </Button>
+            <Button onClick={shareViaWhatsapp} variant="outline" className="justify-start">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+                <path d="M21 13.34c0 4.97-4.5 9-10 9a9.8 9.8 0 0 1-5.3-1.5L2 22l1.3-3.9A8.94 8.94 0 0 1 2 13.34C2 8.38 6.5 4.35 12 4.35c5.5 0 9 4.03 9 9ZM9.5 7.84v8.33M14.5 7.84v8.33M8 12.84h8" />
+              </svg>
+              WhatsApp
+            </Button>
+            <Button onClick={handleCopyLink} variant="outline" className="justify-start">
+              <Share2 className="mr-2 h-4 w-4" />
+              Copier le lien
+            </Button>
+            <Button onClick={handlePrint} variant="outline" className="justify-start">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+                <polyline points="6 9 6 2 18 2 18 9" />
+                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                <rect width="12" height="8" x="6" y="14" />
+              </svg>
+              Imprimer
+            </Button>
+          </div>
+        </PopoverContent>
+      </Popover>
+
+      {/* Modified Footer with Share Button */}
+      <MobileNavigation 
+        showShareButton={true}
+        onShare={handleShare}
+      />
     </div>
   );
 };
