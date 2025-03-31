@@ -7,7 +7,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MobileNavigation } from "@/components/MobileNavigation";
 import { Logo } from "@/components/Logo";
 import { useToast } from "@/components/ui/use-toast";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import NutriScore from "@/components/NutriScore";
 
 interface RecipeIngredient {
@@ -80,13 +84,17 @@ const RecipeDisplay = () => {
 
   const shareViaEmail = () => {
     const url = window.location.href;
-    window.open(`mailto:?subject=Une recette pour toi de ChefFrigo&body=Regarde cette recette que j'ai trouvée: ${url}`);
+    window.open(
+      `mailto:?subject=Une recette pour toi de ChefFrigo&body=Regarde cette recette que j'ai trouvée: ${url}`
+    );
     setShareOpen(false);
   };
 
   const shareViaWhatsapp = () => {
     const url = window.location.href;
-    window.open(`https://api.whatsapp.com/send?text=Regarde cette recette que j'ai trouvée: ${url}`);
+    window.open(
+      `https://api.whatsapp.com/send?text=Regarde cette recette que j'ai trouvée: ${url}`
+    );
     setShareOpen(false);
   };
 
@@ -98,13 +106,15 @@ const RecipeDisplay = () => {
 
       <div className="mobile-content">
         <div className="relative h-60 w-full">
-          <img 
-            src={recipeImage} 
-            alt={recipe.titre} 
+          <img
+            src={recipeImage}
+            alt={recipe.titre}
             className="w-full h-full object-cover"
           />
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-            <h1 className="text-white text-2xl font-semibold">{recipe.titre}</h1>
+            <h1 className="text-white text-2xl font-semibold">
+              {recipe.titre}
+            </h1>
           </div>
         </div>
 
@@ -140,7 +150,7 @@ const RecipeDisplay = () => {
               Nutrition
             </TabsTrigger>
           </TabsList>
-          
+
           <div className="p-4">
             <TabsContent value="ingredients" className="mt-0 space-y-4">
               <div>
@@ -159,7 +169,7 @@ const RecipeDisplay = () => {
                   ))}
                 </ul>
               </div>
-              
+
               <div>
                 <h3 className="text-lg font-medium mb-3">Ustensiles</h3>
                 <div className="grid grid-cols-2 gap-2">
@@ -175,7 +185,7 @@ const RecipeDisplay = () => {
                 </div>
               </div>
             </TabsContent>
-            
+
             <TabsContent value="preparation" className="mt-0">
               <h3 className="text-lg font-medium mb-3">Instructions</h3>
               {Object.entries(recipe.instructions).map(
@@ -203,35 +213,44 @@ const RecipeDisplay = () => {
                 )
               )}
             </TabsContent>
-            
+
             <TabsContent value="nutrition" className="mt-0">
-              <h3 className="text-lg font-medium mb-3">Valeurs Nutritionnelles</h3>
-              <div className="flex items-center gap-2 mb-4">
-                <span className="text-xs text-gray-500">Nutriscore:</span>
-                <NutriScore score={recipe.nutriscore} size="md" />
-              </div>
+              <h3 className="text-lg font-medium mb-3">
+                Valeurs Nutritionnelles
+              </h3>
+
               <p className="text-xs text-gray-500 mb-4">Pour 100g</p>
-              
+
               <div className="space-y-4">
                 <div className="bg-gray-50 p-3 rounded-xl flex justify-between items-center">
                   <span className="font-medium text-sm">Calories</span>
-                  <span className="text-sm">{recipe.valeurs_nutritionnelles.calories}</span>
+                  <span className="text-sm">
+                    {recipe.valeurs_nutritionnelles.calories}
+                  </span>
                 </div>
                 <div className="bg-gray-50 p-3 rounded-xl flex justify-between items-center">
                   <span className="font-medium text-sm">Protéines</span>
-                  <span className="text-sm">{recipe.valeurs_nutritionnelles.proteines}</span>
+                  <span className="text-sm">
+                    {recipe.valeurs_nutritionnelles.proteines}
+                  </span>
                 </div>
                 <div className="bg-gray-50 p-3 rounded-xl flex justify-between items-center">
                   <span className="font-medium text-sm">Glucides</span>
-                  <span className="text-sm">{recipe.valeurs_nutritionnelles.glucides}</span>
+                  <span className="text-sm">
+                    {recipe.valeurs_nutritionnelles.glucides}
+                  </span>
                 </div>
                 <div className="bg-gray-50 p-3 rounded-xl flex justify-between items-center">
                   <span className="font-medium text-sm">Lipides</span>
-                  <span className="text-sm">{recipe.valeurs_nutritionnelles.lipides}</span>
+                  <span className="text-sm">
+                    {recipe.valeurs_nutritionnelles.lipides}
+                  </span>
                 </div>
                 <div className="bg-gray-50 p-3 rounded-xl flex justify-between items-center">
                   <span className="font-medium text-sm">Fibres</span>
-                  <span className="text-sm">{recipe.valeurs_nutritionnelles.fibres}</span>
+                  <span className="text-sm">
+                    {recipe.valeurs_nutritionnelles.fibres}
+                  </span>
                 </div>
               </div>
             </TabsContent>
@@ -242,25 +261,74 @@ const RecipeDisplay = () => {
       <Popover open={shareOpen} onOpenChange={setShareOpen}>
         <PopoverContent className="w-56 p-2" align="center">
           <div className="grid gap-2">
-            <Button onClick={shareViaEmail} variant="outline" className="justify-start">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+            <Button
+              onClick={shareViaEmail}
+              variant="outline"
+              className="justify-start"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="mr-2"
+              >
                 <rect width="20" height="16" x="2" y="4" rx="2" />
                 <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
               </svg>
               Email
             </Button>
-            <Button onClick={shareViaWhatsapp} variant="outline" className="justify-start">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+            <Button
+              onClick={shareViaWhatsapp}
+              variant="outline"
+              className="justify-start"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="mr-2"
+              >
                 <path d="M21 13.34c0 4.97-4.5 9-10 9a9.8 9.8 0 0 1-5.3-1.5L2 22l1.3-3.9A8.94 8.94 0 0 1 2 13.34C2 8.38 6.5 4.35 12 4.35c5.5 0 9 4.03 9 9ZM9.5 7.84v8.33M14.5 7.84v8.33M8 12.84h8" />
               </svg>
               WhatsApp
             </Button>
-            <Button onClick={handleCopyLink} variant="outline" className="justify-start">
+            <Button
+              onClick={handleCopyLink}
+              variant="outline"
+              className="justify-start"
+            >
               <Share2 className="mr-2 h-4 w-4" />
               Copier le lien
             </Button>
-            <Button onClick={handlePrint} variant="outline" className="justify-start">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+            <Button
+              onClick={handlePrint}
+              variant="outline"
+              className="justify-start"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="mr-2"
+              >
                 <polyline points="6 9 6 2 18 2 18 9" />
                 <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
                 <rect width="12" height="8" x="6" y="14" />
@@ -271,10 +339,7 @@ const RecipeDisplay = () => {
         </PopoverContent>
       </Popover>
 
-      <MobileNavigation 
-        showShareButton={true}
-        onShare={handleShare}
-      />
+      <MobileNavigation showShareButton={true} onShare={handleShare} />
     </div>
   );
 };
