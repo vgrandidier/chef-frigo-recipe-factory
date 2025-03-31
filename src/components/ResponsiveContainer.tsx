@@ -18,14 +18,14 @@ export function ResponsiveContainer({
   
   if (isMobile && mobileFullWidth) {
     return (
-      <div className={cn("mobile-container", className)}>
+      <div className={cn("w-full h-full", className)}>
         {children}
       </div>
     );
   }
   
   return (
-    <div className={cn("responsive-container py-6", className)}>
+    <div className={cn("w-full mx-auto py-6", className)}>
       {children}
     </div>
   );
