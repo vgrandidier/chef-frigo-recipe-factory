@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -13,7 +14,7 @@ import { IngredientInput } from "@/components/IngredientInput";
 import { Logo } from "@/components/Logo";
 import { useToast } from "@/components/ui/use-toast";
 import { Progress } from "@/components/ui/progress";
-import { X, Utensils, Clock, HeartPulse } from "lucide-react";
+import { X, Clock, HeartPulse, Refrigerator } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { MobileNavigation } from "@/components/MobileNavigation";
 
@@ -292,7 +293,7 @@ const RecipeForm = () => {
               
               <div className="grid grid-cols-3 gap-3">
                 <div className="mobile-card p-3 flex flex-col items-center justify-center">
-                  <Utensils className="h-6 w-6 text-primary mb-2" />
+                  <Refrigerator className="h-6 w-6 text-primary mb-2" />
                   <span className="text-xs mb-2">Fond de frigo</span>
                   <Checkbox
                     id="fondDeFrigo"
