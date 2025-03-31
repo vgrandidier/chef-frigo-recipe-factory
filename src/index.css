@@ -101,7 +101,7 @@
 
 /* Mobile app styles */
 .mobile-container {
-  @apply max-w-md mx-auto h-[100dvh] flex flex-col bg-white;
+  @apply max-w-full mx-auto h-[100dvh] flex flex-col bg-white;
 }
 
 .mobile-header {
@@ -175,6 +175,36 @@
 /* Un-nested version of print-friendly */
 .print-friendly {
   @apply p-8 max-w-full;
+}
+
+/* Responsive container for desktop views */
+.responsive-container {
+  @apply w-full mx-auto px-4;
+  max-width: 100%;
+}
+
+@media (min-width: 640px) {
+  .responsive-container {
+    max-width: 640px;
+  }
+}
+
+@media (min-width: 768px) {
+  .responsive-container {
+    max-width: 768px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .responsive-container {
+    max-width: 1024px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .responsive-container {
+    max-width: 1280px;
+  }
 }
 
 @media print {
