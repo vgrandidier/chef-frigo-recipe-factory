@@ -13,7 +13,7 @@ export function IngredientInput({ ingredients, setIngredients }: IngredientInput
   const [inputValue, setInputValue] = useState("");
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
+    if (e.key === "Enter" || e.key === "Tab") {
       e.preventDefault();
       addIngredient();
     }
