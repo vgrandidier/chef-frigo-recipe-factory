@@ -14,12 +14,10 @@ import { IngredientInput } from "@/components/IngredientInput";
 import { Logo } from "@/components/Logo";
 import { useToast } from "@/components/ui/use-toast";
 import { Progress } from "@/components/ui/progress";
-import { X, Clock, HeartPulse, Refrigerator, ChefHat, Settings } from "lucide-react";
+import { X, Clock, HeartPulse, Refrigerator, ChefHat } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { MobileNavigation } from "@/components/MobileNavigation";
 import { getMistralRecipe } from "@/utils/recipe/getMistralRecipe";
-import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 
 const CUISINE_TYPES = [
   "Africaine",
@@ -51,24 +49,11 @@ const RecipeForm = () => {
   const [léger, setLéger] = useState(false);
   const [gourmet, setGourmet] = useState(false);
   const [recipeImage, setRecipeImage] = useState("");
-  const [showApiKeyDialog, setShowApiKeyDialog] = useState(false);
-  const [apiKey, setApiKey] = useState("");
 
   const navigate = useNavigate();
   const { toast } = useToast();
 
   const [cancelTokenSource, setCancelTokenSource] = useState<any>(null);
-
-  useEffect(() => {
-    // Vérifier si une clé API est déjà stockée
-    const storedApiKey = localStorage.getItem("MISTRAL_API_KEY");
-    if (storedApiKey) {
-      setApiKey(storedApiKey);
-    } else {
-      // Si pas de clé, montrer le dialogue au chargement
-      setShowApiKeyDialog(true);
-    }
-  }, []);
 
   useEffect(() => {
     if (loading) {
@@ -116,35 +101,7 @@ const RecipeForm = () => {
       return false;
     }
 
-    // Vérifier si la clé API est configurée
-    if (!localStorage.getItem("MISTRAL_API_KEY")) {
-      toast({
-        title: "Clé API manquante",
-        description: "Veuillez configurer votre clé API Mistral.",
-        variant: "destructive",
-      });
-      setShowApiKeyDialog(true);
-      return false;
-    }
-
     return true;
-  };
-
-  const saveApiKey = () => {
-    if (apiKey.trim()) {
-      localStorage.setItem("MISTRAL_API_KEY", apiKey.trim());
-      setShowApiKeyDialog(false);
-      toast({
-        title: "Clé API sauvegardée",
-        description: "Votre clé API Mistral a été enregistrée.",
-      });
-    } else {
-      toast({
-        title: "Clé API invalide",
-        description: "Veuillez entrer une clé API valide.",
-        variant: "destructive",
-      });
-    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -222,13 +179,6 @@ const RecipeForm = () => {
     } catch (error: any) {
       if (axios.isCancel(error)) {
         setLoadingMessage("Requête annulée.");
-      } else if (error.response && error.response.status === 401) {
-        toast({
-          title: "Erreur d'autorisation",
-          description: "Vérifiez votre clé API.",
-          variant: "destructive",
-        });
-        setShowApiKeyDialog(true);
       } else {
         console.error("Erreur lors de la requête à l'API :", error);
         toast({
@@ -250,14 +200,6 @@ const RecipeForm = () => {
     <div className="mobile-container">
       <div className="mobile-header flex-col py-4">
         <Logo size="md" showSlogan={true} />
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="absolute top-4 right-4"
-          onClick={() => setShowApiKeyDialog(true)}
-        >
-          <Settings className="h-5 w-5" />
-        </Button>
       </div>
 
       <div className="mobile-content">
@@ -371,33 +313,6 @@ const RecipeForm = () => {
           </form>
         </div>
       </div>
-
-      <Dialog open={showApiKeyDialog} onOpenChange={setShowApiKeyDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Configuration de l'API Mistral</DialogTitle>
-            <DialogDescription>
-              Entrez votre clé API Mistral pour générer des recettes. Cette clé sera stockée uniquement sur votre appareil.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <label htmlFor="apiKey" className="text-sm font-medium leading-none">
-                Clé API Mistral
-              </label>
-              <Input
-                id="apiKey"
-                placeholder="Entrez votre clé API"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button onClick={saveApiKey}>Sauvegarder</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       <MobileNavigation />
     </div>

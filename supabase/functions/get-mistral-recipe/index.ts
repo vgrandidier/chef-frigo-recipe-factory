@@ -1,0 +1,118 @@
+
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+
+// Headers CORS pour permettre les requêtes depuis notre frontend
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
+serve(async (req) => {
+  // Gestion des requêtes OPTIONS (CORS preflight)
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    // Récupération de la clé API depuis les variables d'environnement
+    const apiKey = Deno.env.get("MISTRAL_API_KEY");
+    
+    if (!apiKey) {
+      throw new Error("Clé API Mistral non configurée sur le serveur.");
+    }
+
+    // Récupération des paramètres depuis le corps de la requête
+    const { cuisineType, ingredients, additionalPrompt } = await req.json();
+
+    // Validation des paramètres
+    if (!cuisineType || !ingredients || !Array.isArray(ingredients)) {
+      return new Response(
+        JSON.stringify({ error: "Paramètres invalides" }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Construction du prompt comme dans la version précédente
+    const prompt = `Je voudrais une recette de type ${cuisineType} avec ${ingredients.join(
+      ", "
+    )}. ${additionalPrompt}En retour, je veux un titre, une description, la liste des ustensiles nécessaires, la liste complète des ingrédients avec les quantités, les valeurs nutritionnelles pour 100g (kcal, protéines, glucides, lipides, fibres), le Nutri-Score, le temps de préparation, le temps total, et les instructions pour la réalisation de la recette par étape. Les instructions doivent être regroupées par type de travail (préparation, cuisson, montage, etc.), et chaque groupe doit avoir un titre. Formate le résultat en JSON avec la structure suivante :
+    {
+      "titre": "Nom de la recette",
+      "description": "Description de la recette",
+      "ustensiles": [
+        {"nom": "Nom de l'ustensile"},
+        ...
+      ],
+      "ingredients": [
+        {"nom": "Nom de l'ingrédient", "quantite": "Quantité nécessaire"},
+        ...
+      ],
+      "valeurs_nutritionnelles": {
+        "calories": "Nombre de kcal pour 100g",
+        "proteines": "Protéines en grammes pour 100g",
+        "glucides": "Glucides en grammes pour 100g",
+        "lipides": "Lipides en grammes pour 100g",
+        "fibres": "Fibres en grammes pour 100g"
+      },
+      "nutriscore": "Valeur du Nutri-Score",
+      "temps_preparation": "Intervalle de temps de préparation en minutes (ex: 20-25 minutes)",
+      "temps_total": "Intervalle de temps total en minutes (ex: 35-40 minutes)",
+      "instructions": {
+        "Préparation": [
+          "Étape 1 : Description de l'étape.",
+          ...
+        ],
+        "Cuisson": [
+          "Étape 1 : Description de l'étape.",
+          ...
+        ],
+        "Montage": [
+          "Étape 1 : Description de l'étape.",
+          ...
+        ],
+        ...
+      }
+    }`;
+
+    // Appel à l'API Mistral
+    console.log("Envoi de la requête à l'API Mistral...");
+    const response = await fetch("https://api.mistral.ai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "mistral-large-latest",
+        messages: [{ role: "user", content: prompt }],
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Erreur API Mistral:", errorData);
+      throw new Error(`Erreur API Mistral: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    const rawResponse = data.choices[0].message.content;
+    
+    // Extraction du JSON de la réponse
+    const jsonMatch = rawResponse.match(/(\{.*\})/s);
+    if (!jsonMatch) {
+      throw new SyntaxError("Pas de JSON valide trouvé dans la réponse.");
+    }
+
+    // Retour de la réponse au frontend
+    return new Response(
+      JSON.stringify({ recipe: jsonMatch[0] }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  } catch (error) {
+    console.error("Erreur:", error.message);
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
+});
