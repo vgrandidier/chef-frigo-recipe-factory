@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -13,9 +14,12 @@ import { IngredientInput } from "@/components/IngredientInput";
 import { Logo } from "@/components/Logo";
 import { useToast } from "@/components/ui/use-toast";
 import { Progress } from "@/components/ui/progress";
-import { X, Clock, HeartPulse, Refrigerator, ChefHat } from "lucide-react";
+import { X, Clock, HeartPulse, Refrigerator, ChefHat, Settings } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { MobileNavigation } from "@/components/MobileNavigation";
+import { getMistralRecipe } from "@/utils/recipe/getMistralRecipe";
+import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 
 const CUISINE_TYPES = [
   "Africaine",
@@ -47,11 +51,24 @@ const RecipeForm = () => {
   const [léger, setLéger] = useState(false);
   const [gourmet, setGourmet] = useState(false);
   const [recipeImage, setRecipeImage] = useState("");
+  const [showApiKeyDialog, setShowApiKeyDialog] = useState(false);
+  const [apiKey, setApiKey] = useState("");
 
   const navigate = useNavigate();
   const { toast } = useToast();
 
   const [cancelTokenSource, setCancelTokenSource] = useState<any>(null);
+
+  useEffect(() => {
+    // Vérifier si une clé API est déjà stockée
+    const storedApiKey = localStorage.getItem("MISTRAL_API_KEY");
+    if (storedApiKey) {
+      setApiKey(storedApiKey);
+    } else {
+      // Si pas de clé, montrer le dialogue au chargement
+      setShowApiKeyDialog(true);
+    }
+  }, []);
 
   useEffect(() => {
     if (loading) {
@@ -99,7 +116,35 @@ const RecipeForm = () => {
       return false;
     }
 
+    // Vérifier si la clé API est configurée
+    if (!localStorage.getItem("MISTRAL_API_KEY")) {
+      toast({
+        title: "Clé API manquante",
+        description: "Veuillez configurer votre clé API Mistral.",
+        variant: "destructive",
+      });
+      setShowApiKeyDialog(true);
+      return false;
+    }
+
     return true;
+  };
+
+  const saveApiKey = () => {
+    if (apiKey.trim()) {
+      localStorage.setItem("MISTRAL_API_KEY", apiKey.trim());
+      setShowApiKeyDialog(false);
+      toast({
+        title: "Clé API sauvegardée",
+        description: "Votre clé API Mistral a été enregistrée.",
+      });
+    } else {
+      toast({
+        title: "Clé API invalide",
+        description: "Veuillez entrer une clé API valide.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -114,8 +159,6 @@ const RecipeForm = () => {
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
     setCancelTokenSource(source);
-
-    const apiKey = "bX7PSeGLmU5Qh6JYnvr2tzvESPhiORAH";
 
     const additionalRequirements = [];
     if (fondDeFrigo) {
@@ -146,78 +189,20 @@ const RecipeForm = () => {
         ? `Contraintes supplémentaires: ${additionalRequirements.join(". ")}. `
         : "";
 
-    const prompt = `Je voudrais une recette de type ${cuisineType} avec ${ingredients.join(
-      ", "
-    )}. ${additionalPrompt}En retour, je veux un titre, une description, la liste des ustensiles nécessaires, la liste complète des ingrédients avec les quantités, les valeurs nutritionnelles pour 100g (kcal, protéines, glucides, lipides, fibres), le Nutri-Score, le temps de préparation, le temps total, et les instructions pour la réalisation de la recette par étape. Les instructions doivent être regroupées par type de travail (préparation, cuisson, montage, etc.), et chaque groupe doit avoir un titre. Formate le résultat en JSON avec la structure suivante :
-    {
-      "titre": "Nom de la recette",
-      "description": "Description de la recette",
-      "ustensiles": [
-        {"nom": "Nom de l'ustensile"},
-        ...
-      ],
-      "ingredients": [
-        {"nom": "Nom de l'ingrédient", "quantite": "Quantité nécessaire"},
-        ...
-      ],
-      "valeurs_nutritionnelles": {
-        "calories": "Nombre de kcal pour 100g",
-        "proteines": "Protéines en grammes pour 100g",
-        "glucides": "Glucides en grammes pour 100g",
-        "lipides": "Lipides en grammes pour 100g",
-        "fibres": "Fibres en grammes pour 100g"
-      },
-      "nutriscore": "Valeur du Nutri-Score",
-      "temps_preparation": "Intervalle de temps de préparation en minutes (ex: 20-25 minutes)",
-      "temps_total": "Intervalle de temps total en minutes (ex: 35-40 minutes)",
-      "instructions": {
-        "Préparation": [
-          "Étape 1 : Description de l'étape.",
-          ...
-        ],
-        "Cuisson": [
-          "Étape 1 : Description de l'étape.",
-          ...
-        ],
-        "Montage": [
-          "Étape 1 : Description de l'étape.",
-          ...
-        ],
-        ...
-      }
-    }`;
-
     try {
       setLoadingMessage("Chef Frigo prépare la recette...");
       setProgress(30);
 
-      const response = await axios.post(
-        "https://api.mistral.ai/v1/chat/completions",
-        {
-          model: "mistral-large-latest",
-          messages: [{ role: "user", content: prompt }],
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${apiKey}`,
-            "Content-Type": "application/json",
-          },
-          cancelToken: source.token,
-        }
-      );
+      // Utiliser notre nouveau module pour obtenir la recette
+      const cleanedResponse = await getMistralRecipe({
+        cuisineType,
+        ingredients,
+        additionalPrompt
+      });
 
       setLoadingMessage("Mise en forme de votre recette...");
       setProgress(70);
 
-      const rawResponse = response.data.choices[0].message.content;
-      console.log("Raw response:", rawResponse);
-
-      const jsonMatch = rawResponse.match(/(\{.*\})/s);
-      if (!jsonMatch) {
-        throw new SyntaxError("Pas de JSON valide trouvé dans la réponse.");
-      }
-
-      const cleanedResponse = jsonMatch[0];
       let recipeData;
       try {
         recipeData = JSON.parse(cleanedResponse);
@@ -243,6 +228,7 @@ const RecipeForm = () => {
           description: "Vérifiez votre clé API.",
           variant: "destructive",
         });
+        setShowApiKeyDialog(true);
       } else {
         console.error("Erreur lors de la requête à l'API :", error);
         toast({
@@ -264,6 +250,14 @@ const RecipeForm = () => {
     <div className="mobile-container">
       <div className="mobile-header flex-col py-4">
         <Logo size="md" showSlogan={true} />
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="absolute top-4 right-4"
+          onClick={() => setShowApiKeyDialog(true)}
+        >
+          <Settings className="h-5 w-5" />
+        </Button>
       </div>
 
       <div className="mobile-content">
@@ -377,6 +371,33 @@ const RecipeForm = () => {
           </form>
         </div>
       </div>
+
+      <Dialog open={showApiKeyDialog} onOpenChange={setShowApiKeyDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Configuration de l'API Mistral</DialogTitle>
+            <DialogDescription>
+              Entrez votre clé API Mistral pour générer des recettes. Cette clé sera stockée uniquement sur votre appareil.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label htmlFor="apiKey" className="text-sm font-medium leading-none">
+                Clé API Mistral
+              </label>
+              <Input
+                id="apiKey"
+                placeholder="Entrez votre clé API"
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={saveApiKey}>Sauvegarder</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <MobileNavigation />
     </div>
