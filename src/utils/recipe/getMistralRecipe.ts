@@ -13,14 +13,18 @@ export const getMistralRecipe = async (
   const { cuisineType, ingredients, additionalPrompt } = params;
   
   try {
-    console.log("Appel de l'edge function avec les paramètres:", { cuisineType, ingredients });
+    console.log("Préparation de l'appel à l'edge function avec les paramètres:", { cuisineType, ingredients });
     
-    // Appel de notre edge function Supabase
+    // Utilisation d'un timeout plus long pour l'appel à l'edge function
     const { data, error } = await supabase.functions.invoke('get-mistral-recipe', {
       body: {
         cuisineType,
         ingredients,
         additionalPrompt
+      },
+      // Ajout d'un délai d'attente de 120 secondes
+      options: {
+        timeout: 120000
       }
     });
 

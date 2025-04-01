@@ -1,4 +1,5 @@
 
+// Import nécessaire pour que Deno puisse utiliser fetch dans l'environnement edge function
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
@@ -9,8 +10,11 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  console.log("Edge function appelée - méthode:", req.method);
+  
   // Gestion des requêtes OPTIONS (CORS preflight)
   if (req.method === 'OPTIONS') {
+    console.log("Traitement d'une requête OPTIONS (CORS preflight)");
     return new Response(null, { headers: corsHeaders });
   }
 
@@ -23,8 +27,23 @@ serve(async (req) => {
       throw new Error("Clé API Mistral non configurée sur le serveur.");
     }
 
+    console.log("Analyse du corps de la requête");
+    
     // Récupération des paramètres depuis le corps de la requête
-    const { cuisineType, ingredients, additionalPrompt } = await req.json();
+    const requestBody = await req.json().catch(err => {
+      console.error("Erreur lors de l'analyse du JSON:", err);
+      return null;
+    });
+    
+    if (!requestBody) {
+      console.error("Corps de requête invalide ou vide");
+      return new Response(
+        JSON.stringify({ error: "Corps de requête invalide" }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const { cuisineType, ingredients, additionalPrompt } = requestBody;
 
     // Validation des paramètres
     if (!cuisineType || !ingredients || !Array.isArray(ingredients)) {
@@ -36,7 +55,7 @@ serve(async (req) => {
     }
 
     console.log("Traitement de la requête avec les paramètres:", { cuisineType, ingredients, additionalPrompt });
-    console.log("Vérification de la clé API Mistral (masquée):", apiKey ? "présente" : "absente");
+    console.log("Clé API Mistral vérifiée:", apiKey ? "présente" : "absente");
 
     // Construction du prompt
     const prompt = `Je voudrais une recette de type ${cuisineType} avec ${ingredients.join(
@@ -80,47 +99,53 @@ serve(async (req) => {
       }
     }`;
 
-    // Appel à l'API Mistral
     console.log("Envoi de la requête à l'API Mistral...");
-    const response = await fetch("https://api.mistral.ai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "mistral-large-latest",
-        messages: [{ role: "user", content: prompt }],
-      }),
-    });
-
-    console.log("Statut de la réponse Mistral:", response.status);
     
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => null);
-      console.error("Erreur API Mistral:", errorData || response.statusText);
-      throw new Error(`Erreur API Mistral: ${response.status} ${response.statusText}`);
+    // Appel à l'API Mistral avec gestion d'erreur améliorée
+    try {
+      const response = await fetch("https://api.mistral.ai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "mistral-large-latest",
+          messages: [{ role: "user", content: prompt }],
+        }),
+      });
+
+      console.log("Statut de la réponse Mistral:", response.status);
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        console.error("Erreur API Mistral:", errorData || response.statusText);
+        throw new Error(`Erreur API Mistral: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log("Réponse reçue de Mistral API - premier caractère:", data.choices[0].message.content.substring(0, 50) + "...");
+      
+      const rawResponse = data.choices[0].message.content;
+      
+      // Extraction du JSON de la réponse
+      const jsonMatch = rawResponse.match(/(\{.*\})/s);
+      if (!jsonMatch) {
+        console.error("Pas de JSON valide trouvé dans la réponse:", rawResponse.substring(0, 100) + "...");
+        throw new SyntaxError("Pas de JSON valide trouvé dans la réponse.");
+      }
+
+      console.log("JSON extrait avec succès, envoi au frontend");
+      
+      // Retour de la réponse au frontend
+      return new Response(
+        JSON.stringify({ recipe: jsonMatch[0] }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    } catch (fetchError) {
+      console.error("Erreur lors de l'appel à l'API Mistral:", fetchError.message);
+      throw fetchError;
     }
-
-    const data = await response.json();
-    console.log("Réponse reçue de Mistral API - premier caractère:", data.choices[0].message.content.substring(0, 50) + "...");
-    
-    const rawResponse = data.choices[0].message.content;
-    
-    // Extraction du JSON de la réponse
-    const jsonMatch = rawResponse.match(/(\{.*\})/s);
-    if (!jsonMatch) {
-      console.error("Pas de JSON valide trouvé dans la réponse:", rawResponse.substring(0, 100) + "...");
-      throw new SyntaxError("Pas de JSON valide trouvé dans la réponse.");
-    }
-
-    console.log("JSON extrait avec succès, envoi au frontend");
-    
-    // Retour de la réponse au frontend
-    return new Response(
-      JSON.stringify({ recipe: jsonMatch[0] }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
   } catch (error) {
     console.error("Erreur dans l'edge function:", error.message, error.stack);
     return new Response(
