@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Share2, Clock, Award, FileDown, Mail, Smartphone, Printer, HardDrive } from "lucide-react";
+import { Share2, Clock, Award, Mail, Smartphone, Printer } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -119,49 +119,6 @@ const RecipeDisplay = () => {
       toast({
         title: "Erreur",
         description: "Impossible de partager via WhatsApp. Veuillez réessayer.",
-        duration: 3000,
-      });
-    } finally {
-      setIsSharing(false);
-    }
-  };
-
-  const exportToPDF = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    try {
-      setIsSharing(true);
-      await shareRecipe(recipe, recipeImage, 'pdf');
-      setShareOpen(false);
-      toast({
-        title: "Succès",
-        description: "La recette a été exportée en PDF.",
-        duration: 3000,
-      });
-    } catch (error) {
-      console.error("Erreur lors de l'export PDF:", error);
-      toast({
-        title: "Erreur",
-        description: "Impossible d'exporter en PDF. Veuillez réessayer.",
-        duration: 3000,
-      });
-    } finally {
-      setIsSharing(false);
-    }
-  };
-
-  const shareToGoogleDrive = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    try {
-      setIsSharing(true);
-      await shareRecipe(recipe, recipeImage, 'gdrive');
-      setShareOpen(false);
-    } catch (error) {
-      console.error("Erreur lors du partage Google Drive:", error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de partager vers Google Drive. Veuillez réessayer.",
         duration: 3000,
       });
     } finally {
@@ -360,24 +317,6 @@ const RecipeDisplay = () => {
               >
                 <Smartphone className="mr-2 h-4 w-4" />
                 WhatsApp
-              </Button>
-              <Button
-                onClick={exportToPDF}
-                variant="outline"
-                className="justify-start"
-                disabled={isSharing}
-              >
-                <FileDown className="mr-2 h-4 w-4" />
-                Exporter en PDF
-              </Button>
-              <Button
-                onClick={shareToGoogleDrive}
-                variant="outline"
-                className="justify-start"
-                disabled={isSharing}
-              >
-                <HardDrive className="mr-2 h-4 w-4" />
-                Google Drive
               </Button>
               <Button
                 onClick={handlePrint}

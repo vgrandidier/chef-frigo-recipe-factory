@@ -1,4 +1,3 @@
-
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 
@@ -81,7 +80,6 @@ export const exportToPDF = async (
   recipe: Recipe,
   recipeImage: string
 ): Promise<Blob> => {
-  // Créer un élément temporaire pour rendre la recette
   const tempElement = document.createElement("div");
   tempElement.className = "pdf-container";
   tempElement.style.padding = "20px";
@@ -150,7 +148,6 @@ export const exportToPDF = async (
       format: 'a4',
     });
     
-    // Ajouter le contenu principal sans l'image de la recette
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = pdf.internal.pageSize.getHeight();
     pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, (canvas.height * pdfWidth) / canvas.width);
@@ -161,7 +158,6 @@ export const exportToPDF = async (
   }
 };
 
-// Ajoute la déclaration pour Google Picker API
 declare global {
   interface Window {
     google?: {
@@ -170,17 +166,15 @@ declare global {
   }
 }
 
-// Partage la recette via différentes méthodes
 export const shareRecipe = async (
   recipe: Recipe,
   recipeImage: string,
-  method: 'email' | 'whatsapp' | 'pdf' | 'gdrive' | 'print'
+  method: 'email' | 'whatsapp' | 'print'
 ): Promise<void> => {
   const recipeText = formatRecipeText(recipe);
   
   switch (method) {
     case 'print':
-      // Création d'une fenêtre d'impression temporaire avec un style adapté
       const printWindow = window.open('', '_blank');
       if (printWindow) {
         printWindow.document.write(`
@@ -259,10 +253,8 @@ export const shareRecipe = async (
       return Promise.resolve();
       
     case 'email':
-      // Utilisation d'une nouvelle fenêtre pour éviter le rechargement
       const emailWindow = window.open(`mailto:?subject=${encodeURIComponent(`Recette: ${recipe.titre}`)}&body=${encodeURIComponent(recipeText)}`, '_blank');
       if (emailWindow) {
-        // Fermer la fenêtre après un court délai si possible
         setTimeout(() => {
           try {
             if (!emailWindow.closed) emailWindow.close();
@@ -274,70 +266,8 @@ export const shareRecipe = async (
       return Promise.resolve();
       
     case 'whatsapp':
-      // Ouvrir WhatsApp dans un nouvel onglet
       window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(`${recipeText}`)}`, '_blank');
       return Promise.resolve();
-      
-    case 'pdf':
-      try {
-        const pdfBlob = await exportToPDF(recipe, recipeImage);
-        const pdfUrl = URL.createObjectURL(pdfBlob);
-        
-        // Créer un lien pour télécharger le PDF
-        const link = document.createElement('a');
-        link.href = pdfUrl;
-        link.download = `recette-${recipe.titre.toLowerCase().replace(/\s+/g, '-')}.pdf`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        // Nettoyer l'URL
-        setTimeout(() => URL.revokeObjectURL(pdfUrl), 100);
-        return Promise.resolve();
-      } catch (error) {
-        console.error("Erreur lors de l'export PDF:", error);
-        throw error;
-      }
-      
-    case 'gdrive':
-      try {
-        const pdfBlob = await exportToPDF(recipe, recipeImage);
-        
-        // Vérifier si Google Drive API est chargée
-        if (!window.google || !window.google.picker) {
-          alert("Impossible de se connecter à Google Drive. Veuillez essayer l'option de téléchargement PDF.");
-          const pdfUrl = URL.createObjectURL(pdfBlob);
-          
-          // Proposer le téléchargement direct
-          const link = document.createElement('a');
-          link.href = pdfUrl;
-          link.download = `recette-${recipe.titre.toLowerCase().replace(/\s+/g, '-')}.pdf`;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          
-          setTimeout(() => URL.revokeObjectURL(pdfUrl), 100);
-          return Promise.resolve();
-        }
-        
-        // Interface simplifiée pour Google Drive (nécessite généralement une configuration avancée)
-        const pdfUrl = URL.createObjectURL(pdfBlob);
-        window.open(`https://drive.google.com/`, '_blank');
-        alert("Veuillez télécharger le PDF puis l'importer manuellement dans Google Drive");
-        
-        const link = document.createElement('a');
-        link.href = pdfUrl;
-        link.download = `recette-${recipe.titre.toLowerCase().replace(/\s+/g, '-')}.pdf`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        setTimeout(() => URL.revokeObjectURL(pdfUrl), 100);
-        return Promise.resolve();
-      } catch (error) {
-        console.error("Erreur lors du partage vers Google Drive:", error);
-        throw error;
-      }
       
     default:
       console.error("Méthode de partage non prise en charge");
