@@ -22,10 +22,9 @@ export const getMistralRecipe = async (
         ingredients,
         additionalPrompt
       },
-      // Ajout d'un délai d'attente de 120 secondes
-      options: {
-        timeout: 120000
-      }
+      // Le paramètre timeout doit être passé directement dans l'objet de configuration principale
+      // et non dans un sous-objet 'options'
+      timeout: 120000
     });
 
     if (error) {
