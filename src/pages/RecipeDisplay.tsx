@@ -66,7 +66,7 @@ const RecipeDisplay = () => {
   const { recipe, recipeImage } = state;
 
   const handleShare = () => {
-    setShareOpen(true);
+    setShareOpen(prev => !prev);
   };
 
   const handlePrint = () => {
@@ -300,57 +300,69 @@ const RecipeDisplay = () => {
         </Tabs>
       </div>
 
-      <Popover open={shareOpen} onOpenChange={setShareOpen}>
-        <PopoverContent className="w-56 p-2" align="center">
-          <div className="grid gap-2">
-            <Button
-              onClick={shareViaEmail}
-              variant="outline"
-              className="justify-start"
-              disabled={isSharing}
+      <div className="fixed bottom-0 right-0 p-4 no-print z-50">
+        <Popover open={shareOpen} onOpenChange={setShareOpen}>
+          <PopoverTrigger asChild>
+            <Button 
+              onClick={handleShare}
+              variant="outline" 
+              size="icon" 
+              className="rounded-full shadow-md"
             >
-              <Mail className="mr-2 h-4 w-4" />
-              Email
+              <Share2 className="h-4 w-4" />
             </Button>
-            <Button
-              onClick={shareViaWhatsapp}
-              variant="outline"
-              className="justify-start"
-              disabled={isSharing}
-            >
-              <Smartphone className="mr-2 h-4 w-4" />
-              WhatsApp
-            </Button>
-            <Button
-              onClick={exportToPDF}
-              variant="outline"
-              className="justify-start"
-              disabled={isSharing}
-            >
-              <FileDown className="mr-2 h-4 w-4" />
-              Exporter en PDF
-            </Button>
-            <Button
-              onClick={shareToGoogleDrive}
-              variant="outline"
-              className="justify-start"
-              disabled={isSharing}
-            >
-              <HardDrive className="mr-2 h-4 w-4" />
-              Google Drive
-            </Button>
-            <Button
-              onClick={handlePrint}
-              variant="outline"
-              className="justify-start"
-              disabled={isSharing}
-            >
-              <Printer className="mr-2 h-4 w-4" />
-              Imprimer
-            </Button>
-          </div>
-        </PopoverContent>
-      </Popover>
+          </PopoverTrigger>
+          <PopoverContent className="w-56 p-2" align="end">
+            <div className="grid gap-2">
+              <Button
+                onClick={shareViaEmail}
+                variant="outline"
+                className="justify-start"
+                disabled={isSharing}
+              >
+                <Mail className="mr-2 h-4 w-4" />
+                Email
+              </Button>
+              <Button
+                onClick={shareViaWhatsapp}
+                variant="outline"
+                className="justify-start"
+                disabled={isSharing}
+              >
+                <Smartphone className="mr-2 h-4 w-4" />
+                WhatsApp
+              </Button>
+              <Button
+                onClick={exportToPDF}
+                variant="outline"
+                className="justify-start"
+                disabled={isSharing}
+              >
+                <FileDown className="mr-2 h-4 w-4" />
+                Exporter en PDF
+              </Button>
+              <Button
+                onClick={shareToGoogleDrive}
+                variant="outline"
+                className="justify-start"
+                disabled={isSharing}
+              >
+                <HardDrive className="mr-2 h-4 w-4" />
+                Google Drive
+              </Button>
+              <Button
+                onClick={handlePrint}
+                variant="outline"
+                className="justify-start"
+                disabled={isSharing}
+              >
+                <Printer className="mr-2 h-4 w-4" />
+                Imprimer
+              </Button>
+            </div>
+          </PopoverContent>
+        </Popover>
+      </div>
 
       <MobileNavigation showShareButton={true} onShare={handleShare} />
     </div>
