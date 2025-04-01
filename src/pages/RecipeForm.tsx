@@ -19,10 +19,12 @@ import { MobileNavigation } from "@/components/MobileNavigation";
 
 const CUISINE_TYPES = [
   "Africaine",
+  "Amérique du Sud",
   "Antillaise",
   "Chinoise",
   "Cubaine",
   "Espagnole",
+  "Etats-Unis",
   "Française",
   "Grecque",
   "Indienne",
