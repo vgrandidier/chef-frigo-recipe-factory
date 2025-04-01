@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -13,9 +14,10 @@ import { IngredientInput } from "@/components/IngredientInput";
 import { Logo } from "@/components/Logo";
 import { useToast } from "@/components/ui/use-toast";
 import { Progress } from "@/components/ui/progress";
-import { X, Clock, HeartPulse, Refrigerator } from "lucide-react";
+import { X, Clock, HeartPulse, Refrigerator, ChefHat } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { MobileNavigation } from "@/components/MobileNavigation";
+import { getMistralRecipe } from "@/utils/recipe/getMistralRecipe";
 
 const CUISINE_TYPES = [
   "Africaine",
@@ -45,6 +47,7 @@ const RecipeForm = () => {
   const [fondDeFrigo, setFondDeFrigo] = useState(false);
   const [pressé, setPressé] = useState(false);
   const [léger, setLéger] = useState(false);
+  const [gourmet, setGourmet] = useState(false);
   const [recipeImage, setRecipeImage] = useState("");
 
   const navigate = useNavigate();
@@ -114,8 +117,6 @@ const RecipeForm = () => {
     const source = CancelToken.source();
     setCancelTokenSource(source);
 
-    const apiKey = "bX7PSeGLmU5Qh6JYnvr2tzvESPhiORAH";
-
     const additionalRequirements = [];
     if (fondDeFrigo) {
       additionalRequirements.push(
@@ -134,84 +135,31 @@ const RecipeForm = () => {
       additionalRequirements.push(
         "avec un minimum de calories et un Nutri-Score favorable"
       );
+    if (gourmet) {
+      additionalRequirements.push(
+        "en ajoutant des ingrédients additionnels de qualité et en les utilisant de manière gastronomique"
+      );
+    }
 
     const additionalPrompt =
       additionalRequirements.length > 0
         ? `Contraintes supplémentaires: ${additionalRequirements.join(". ")}. `
         : "";
 
-    const prompt = `Je voudrais une recette de type ${cuisineType} avec ${ingredients.join(
-      ", "
-    )}. ${additionalPrompt}En retour, je veux un titre, une description, la liste des ustensiles nécessaires, la liste complète des ingrédients avec les quantités, les valeurs nutritionnelles pour 100g (kcal, protéines, glucides, lipides, fibres), le Nutri-Score, le temps de préparation, le temps total, et les instructions pour la réalisation de la recette par étape. Les instructions doivent être regroupées par type de travail (préparation, cuisson, montage, etc.), et chaque groupe doit avoir un titre. Formate le résultat en JSON avec la structure suivante :
-    {
-      "titre": "Nom de la recette",
-      "description": "Description de la recette",
-      "ustensiles": [
-        {"nom": "Nom de l'ustensile"},
-        ...
-      ],
-      "ingredients": [
-        {"nom": "Nom de l'ingrédient", "quantite": "Quantité nécessaire"},
-        ...
-      ],
-      "valeurs_nutritionnelles": {
-        "calories": "Nombre de kcal pour 100g",
-        "proteines": "Protéines en grammes pour 100g",
-        "glucides": "Glucides en grammes pour 100g",
-        "lipides": "Lipides en grammes pour 100g",
-        "fibres": "Fibres en grammes pour 100g"
-      },
-      "nutriscore": "Valeur du Nutri-Score",
-      "temps_preparation": "Intervalle de temps de préparation en minutes (ex: 20-25 minutes)",
-      "temps_total": "Intervalle de temps total en minutes (ex: 35-40 minutes)",
-      "instructions": {
-        "Préparation": [
-          "Étape 1 : Description de l'étape.",
-          ...
-        ],
-        "Cuisson": [
-          "Étape 1 : Description de l'étape.",
-          ...
-        ],
-        "Montage": [
-          "Étape 1 : Description de l'étape.",
-          ...
-        ],
-        ...
-      }
-    }`;
-
     try {
       setLoadingMessage("Chef Frigo prépare la recette...");
       setProgress(30);
 
-      const response = await axios.post(
-        "https://api.mistral.ai/v1/chat/completions",
-        {
-          model: "mistral-large-latest",
-          messages: [{ role: "user", content: prompt }],
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${apiKey}`,
-            "Content-Type": "application/json",
-          },
-          cancelToken: source.token,
-        }
-      );
+      // Utiliser notre nouveau module pour obtenir la recette
+      const cleanedResponse = await getMistralRecipe({
+        cuisineType,
+        ingredients,
+        additionalPrompt
+      });
 
       setLoadingMessage("Mise en forme de votre recette...");
       setProgress(70);
 
-      const rawResponse = response.data.choices[0].message.content;
-      console.log("Raw response:", rawResponse);
-
-      const jsonMatch = rawResponse.match(/(\{.*\})/s);
-      if (!jsonMatch) {
-        throw new SyntaxError("Pas de JSON valide trouvé dans la réponse.");
-      }
-
-      const cleanedResponse = jsonMatch[0];
       let recipeData;
       try {
         recipeData = JSON.parse(cleanedResponse);
@@ -231,12 +179,6 @@ const RecipeForm = () => {
     } catch (error: any) {
       if (axios.isCancel(error)) {
         setLoadingMessage("Requête annulée.");
-      } else if (error.response && error.response.status === 401) {
-        toast({
-          title: "Erreur d'autorisation",
-          description: "Vérifiez votre clé API.",
-          variant: "destructive",
-        });
       } else {
         console.error("Erreur lors de la requête à l'API :", error);
         toast({
@@ -292,7 +234,7 @@ const RecipeForm = () => {
             <div className="space-y-3">
               <label className="text-sm font-medium">Options :</label>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 <div className="mobile-card p-3 flex flex-col items-center justify-center">
                   <Refrigerator className="h-6 w-6 text-primary mb-2" />
                   <span className="text-xs mb-2">Fond de frigo</span>
@@ -308,7 +250,7 @@ const RecipeForm = () => {
 
                 <div className="mobile-card p-3 flex flex-col items-center justify-center">
                   <Clock className="h-6 w-6 text-primary mb-2" />
-                  <span className="text-xs mb-2">Je suis pressé</span>
+                  <span className="text-xs mb-2">Rapide</span>
                   <Checkbox
                     id="presse"
                     checked={pressé}
@@ -319,11 +261,22 @@ const RecipeForm = () => {
 
                 <div className="mobile-card p-3 flex flex-col items-center justify-center">
                   <HeartPulse className="h-6 w-6 text-primary mb-2" />
-                  <span className="text-xs mb-2">Manger léger</span>
+                  <span className="text-xs mb-2">Équilibré</span>
                   <Checkbox
                     id="leger"
                     checked={léger}
                     onCheckedChange={(checked) => setLéger(checked === true)}
+                    className="h-5 w-5"
+                  />
+                </div>
+                
+                <div className="mobile-card p-3 flex flex-col items-center justify-center">
+                  <ChefHat className="h-6 w-6 text-primary mb-2" />
+                  <span className="text-xs mb-2">Gourmet</span>
+                  <Checkbox
+                    id="gourmet"
+                    checked={gourmet}
+                    onCheckedChange={(checked) => setGourmet(checked === true)}
                     className="h-5 w-5"
                   />
                 </div>

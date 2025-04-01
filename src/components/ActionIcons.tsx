@@ -1,5 +1,5 @@
 
-import { Share, Copy, ChefHat, ArrowLeft, Printer } from "lucide-react";
+import { Share, ArrowLeft, Printer } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -67,19 +67,15 @@ export function ActionIcons({ url, onPrint, onBack, className }: ActionIconsProp
               </svg>
               WhatsApp
             </Button>
-            <Button onClick={handleCopyLink} variant="outline" className="justify-start">
-              <Copy className="mr-2 h-4 w-4" />
-              Copier le lien
-            </Button>
+            {onPrint && (
+              <Button onClick={onPrint} variant="outline" className="justify-start">
+                <Printer className="mr-2 h-4 w-4" />
+                Imprimer
+              </Button>
+            )}
           </div>
         </PopoverContent>
       </Popover>
-      
-      {onPrint && (
-        <Button onClick={onPrint} variant="outline" size="icon" className="no-print">
-          <Printer className="h-4 w-4" />
-        </Button>
-      )}
     </div>
   );
 }
