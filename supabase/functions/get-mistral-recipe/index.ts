@@ -1,4 +1,5 @@
 
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 // Headers CORS pour permettre les requêtes depuis notre frontend
@@ -18,6 +19,7 @@ serve(async (req) => {
     const apiKey = Deno.env.get("MISTRAL_API_KEY");
     
     if (!apiKey) {
+      console.error("Clé API Mistral non configurée sur le serveur.");
       throw new Error("Clé API Mistral non configurée sur le serveur.");
     }
 
@@ -26,13 +28,17 @@ serve(async (req) => {
 
     // Validation des paramètres
     if (!cuisineType || !ingredients || !Array.isArray(ingredients)) {
+      console.error("Paramètres invalides:", { cuisineType, ingredients });
       return new Response(
         JSON.stringify({ error: "Paramètres invalides" }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Construction du prompt comme dans la version précédente
+    console.log("Traitement de la requête avec les paramètres:", { cuisineType, ingredients, additionalPrompt });
+    console.log("Vérification de la clé API Mistral (masquée):", apiKey ? "présente" : "absente");
+
+    // Construction du prompt
     const prompt = `Je voudrais une recette de type ${cuisineType} avec ${ingredients.join(
       ", "
     )}. ${additionalPrompt}En retour, je veux un titre, une description, la liste des ustensiles nécessaires, la liste complète des ingrédients avec les quantités, les valeurs nutritionnelles pour 100g (kcal, protéines, glucides, lipides, fibres), le Nutri-Score, le temps de préparation, le temps total, et les instructions pour la réalisation de la recette par étape. Les instructions doivent être regroupées par type de travail (préparation, cuisson, montage, etc.), et chaque groupe doit avoir un titre. Formate le résultat en JSON avec la structure suivante :
@@ -88,28 +94,35 @@ serve(async (req) => {
       }),
     });
 
+    console.log("Statut de la réponse Mistral:", response.status);
+    
     if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Erreur API Mistral:", errorData);
+      const errorData = await response.json().catch(() => null);
+      console.error("Erreur API Mistral:", errorData || response.statusText);
       throw new Error(`Erreur API Mistral: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();
+    console.log("Réponse reçue de Mistral API - premier caractère:", data.choices[0].message.content.substring(0, 50) + "...");
+    
     const rawResponse = data.choices[0].message.content;
     
     // Extraction du JSON de la réponse
     const jsonMatch = rawResponse.match(/(\{.*\})/s);
     if (!jsonMatch) {
+      console.error("Pas de JSON valide trouvé dans la réponse:", rawResponse.substring(0, 100) + "...");
       throw new SyntaxError("Pas de JSON valide trouvé dans la réponse.");
     }
 
+    console.log("JSON extrait avec succès, envoi au frontend");
+    
     // Retour de la réponse au frontend
     return new Response(
       JSON.stringify({ recipe: jsonMatch[0] }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
-    console.error("Erreur:", error.message);
+    console.error("Erreur dans l'edge function:", error.message, error.stack);
     return new Response(
       JSON.stringify({ error: error.message }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

@@ -13,6 +13,8 @@ export const getMistralRecipe = async (
   const { cuisineType, ingredients, additionalPrompt } = params;
   
   try {
+    console.log("Appel de l'edge function avec les paramètres:", { cuisineType, ingredients });
+    
     // Appel de notre edge function Supabase
     const { data, error } = await supabase.functions.invoke('get-mistral-recipe', {
       body: {
@@ -28,9 +30,11 @@ export const getMistralRecipe = async (
     }
 
     if (!data || !data.recipe) {
+      console.error("Format de réponse invalide de l'edge function:", data);
       throw new Error("Format de réponse invalide de l'edge function");
     }
 
+    console.log("Réponse reçue de l'edge function:", data.recipe.substring(0, 50) + "...");
     return data.recipe;
   } catch (error: any) {
     console.error("Erreur lors de la requête:", error);
