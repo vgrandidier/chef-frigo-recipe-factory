@@ -1,6 +1,6 @@
 
 import { useNavigate, useLocation } from "react-router-dom";
-import { Home, Share2 } from "lucide-react";
+import { Home, Share2, ChefHat } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
@@ -20,30 +20,36 @@ export function MobileNavigation({
   const isMobile = useIsMobile();
   
   const isActive = (path: string) => location.pathname === path;
+  const isHomePage = isActive('/') || isActive('/form');
   
-  // If not mobile, render a horizontal navigation bar
+  // Si nous sommes déjà sur la page d'accueil, ne pas afficher le bouton Accueil
+  const showHomeButton = !isHomePage;
+  
+  // Si not mobile, render a horizontal navigation bar with centered items
   if (!isMobile) {
     return (
-      <div className={cn("flex items-center justify-between py-3 border-b bg-white", className)}>
+      <div className={cn("flex items-center justify-center py-3 border-b bg-white", className)}>
         <div className="flex items-center gap-6">
-          <button 
-            className={`flex items-center gap-2 text-sm ${isActive('/') || isActive('/form') ? 'text-primary font-medium' : 'text-gray-500'}`}
-            onClick={() => navigate('/')}
-          >
-            <Home className="h-4 w-4" />
-            <span>Accueil</span>
-          </button>
+          {showHomeButton && (
+            <button 
+              className={`flex items-center gap-2 text-sm ${isActive('/') || isActive('/form') ? 'text-primary font-medium' : 'text-gray-500'}`}
+              onClick={() => navigate('/')}
+            >
+              <Home className="h-4 w-4" />
+              <span>Accueil</span>
+            </button>
+          )}
+          
+          {showShareButton && onShare && (
+            <button 
+              className="flex items-center gap-2 text-sm text-gray-500"
+              onClick={onShare}
+            >
+              <Share2 className="h-4 w-4" />
+              <span>Partager</span>
+            </button>
+          )}
         </div>
-        
-        {showShareButton && onShare && (
-          <button 
-            className="flex items-center gap-2 text-sm text-gray-500"
-            onClick={onShare}
-          >
-            <Share2 className="h-4 w-4" />
-            <span>Partager</span>
-          </button>
-        )}
       </div>
     );
   }
@@ -51,13 +57,15 @@ export function MobileNavigation({
   // Mobile navigation
   return (
     <div className={cn("mobile-nav", className)}>
-      <button 
-        className={`mobile-nav-item ${isActive('/') || isActive('/form') ? 'active' : ''}`}
-        onClick={() => navigate('/')}
-      >
-        <Home className="mobile-nav-icon" />
-        <span>Accueil</span>
-      </button>
+      {showHomeButton && (
+        <button 
+          className={`mobile-nav-item ${isHomePage ? 'active' : ''}`}
+          onClick={() => navigate('/')}
+        >
+          <Home className="mobile-nav-icon" />
+          <span>Accueil</span>
+        </button>
+      )}
       
       {showShareButton && onShare && (
         <button 

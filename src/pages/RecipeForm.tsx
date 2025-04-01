@@ -13,7 +13,7 @@ import { IngredientInput } from "@/components/IngredientInput";
 import { Logo } from "@/components/Logo";
 import { useToast } from "@/components/ui/use-toast";
 import { Progress } from "@/components/ui/progress";
-import { X, Clock, HeartPulse, Refrigerator } from "lucide-react";
+import { X, Clock, HeartPulse, Refrigerator, ChefHat } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { MobileNavigation } from "@/components/MobileNavigation";
 
@@ -45,6 +45,7 @@ const RecipeForm = () => {
   const [fondDeFrigo, setFondDeFrigo] = useState(false);
   const [pressé, setPressé] = useState(false);
   const [léger, setLéger] = useState(false);
+  const [gourmet, setGourmet] = useState(false);
   const [recipeImage, setRecipeImage] = useState("");
 
   const navigate = useNavigate();
@@ -134,6 +135,11 @@ const RecipeForm = () => {
       additionalRequirements.push(
         "avec un minimum de calories et un Nutri-Score favorable"
       );
+    if (gourmet) {
+      additionalRequirements.push(
+        "en ajoutant des ingrédients additionnels de qualité et en les utilisant de manière gastronomique"
+      );
+    }
 
     const additionalPrompt =
       additionalRequirements.length > 0
@@ -292,7 +298,7 @@ const RecipeForm = () => {
             <div className="space-y-3">
               <label className="text-sm font-medium">Options :</label>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 <div className="mobile-card p-3 flex flex-col items-center justify-center">
                   <Refrigerator className="h-6 w-6 text-primary mb-2" />
                   <span className="text-xs mb-2">Fond de frigo</span>
@@ -308,7 +314,7 @@ const RecipeForm = () => {
 
                 <div className="mobile-card p-3 flex flex-col items-center justify-center">
                   <Clock className="h-6 w-6 text-primary mb-2" />
-                  <span className="text-xs mb-2">Je suis pressé</span>
+                  <span className="text-xs mb-2">Rapide</span>
                   <Checkbox
                     id="presse"
                     checked={pressé}
@@ -319,11 +325,22 @@ const RecipeForm = () => {
 
                 <div className="mobile-card p-3 flex flex-col items-center justify-center">
                   <HeartPulse className="h-6 w-6 text-primary mb-2" />
-                  <span className="text-xs mb-2">Manger léger</span>
+                  <span className="text-xs mb-2">Équilibré</span>
                   <Checkbox
                     id="leger"
                     checked={léger}
                     onCheckedChange={(checked) => setLéger(checked === true)}
+                    className="h-5 w-5"
+                  />
+                </div>
+                
+                <div className="mobile-card p-3 flex flex-col items-center justify-center">
+                  <ChefHat className="h-6 w-6 text-primary mb-2" />
+                  <span className="text-xs mb-2">Gourmet</span>
+                  <Checkbox
+                    id="gourmet"
+                    checked={gourmet}
+                    onCheckedChange={(checked) => setGourmet(checked === true)}
                     className="h-5 w-5"
                   />
                 </div>
