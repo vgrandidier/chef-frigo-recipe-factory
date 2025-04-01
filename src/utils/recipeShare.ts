@@ -1,4 +1,3 @@
-
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 
@@ -169,6 +168,15 @@ export const exportToPDF = async (
     document.body.removeChild(tempElement);
   }
 };
+
+// Ajoute la déclaration pour Google Picker API
+declare global {
+  interface Window {
+    google?: {
+      picker?: any;
+    };
+  }
+}
 
 // Partage la recette via l'API Web Share si disponible
 export const shareRecipe = async (
