@@ -8,6 +8,12 @@ export const printRecipe = (recipe: Recipe): Promise<void> => {
   const cleanInstructionText = (step: string): string => {
     return step.replace(/^Étape\s+\d+\s*:\s*/i, '');
   };
+
+  // Extract numeric value from time string
+  const extractTimeValue = (timeString: string): string => {
+    const match = timeString.match(/(\d+)/);
+    return match ? match[1] : timeString;
+  };
   
   if (printWindow) {
     printWindow.document.write(`
@@ -21,6 +27,8 @@ export const printRecipe = (recipe: Recipe): Promise<void> => {
             .info-bar { display: flex; justify-content: space-between; background-color: #f7f7f7; padding: 15px; border-radius: 8px; margin-bottom: 30px; }
             .info-item { text-align: center; }
             .info-item p:first-child { font-weight: bold; margin: 0; color: #555; }
+            .info-item .value { font-size: 16px; margin: 4px 0; }
+            .info-item .unit { font-size: 12px; color: #777; margin: 0; }
             ul, ol { padding-left: 20px; }
             li { margin-bottom: 8px; }
             .footer { text-align: center; margin-top: 30px; color: #777; font-size: 12px; font-style: italic; }
@@ -32,19 +40,21 @@ export const printRecipe = (recipe: Recipe): Promise<void> => {
           <div class="info-bar">
             <div class="info-item">
               <p>Préparation</p>
-              <p>${recipe.temps_preparation}</p>
+              <p class="value">${extractTimeValue(recipe.temps_preparation)}</p>
+              <p class="unit">minutes</p>
             </div>
             <div class="info-item">
               <p>Total</p>
-              <p>${recipe.temps_total}</p>
+              <p class="value">${extractTimeValue(recipe.temps_total)}</p>
+              <p class="unit">minutes</p>
             </div>
             <div class="info-item">
               <p>Couverts</p>
-              <p>${recipe.nombre_couverts || 4}</p>
+              <p class="value">${recipe.nombre_couverts || 4}</p>
             </div>
             <div class="info-item">
               <p>Nutriscore</p>
-              <p>${recipe.nutriscore}</p>
+              <p class="value">${recipe.nutriscore}</p>
             </div>
           </div>
           
