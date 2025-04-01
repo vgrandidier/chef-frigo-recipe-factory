@@ -2,7 +2,8 @@
 import { useState, KeyboardEvent, ChangeEvent } from "react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { X } from "lucide-react";
+import { X, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface IngredientInputProps {
   ingredients: string[];
@@ -13,7 +14,7 @@ export function IngredientInput({ ingredients, setIngredients }: IngredientInput
   const [inputValue, setInputValue] = useState("");
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" || e.key === "Tab") {
+    if (e.key === "Enter") {
       e.preventDefault();
       addIngredient();
     }
@@ -37,14 +38,24 @@ export function IngredientInput({ ingredients, setIngredients }: IngredientInput
 
   return (
     <div className="space-y-2">
-      <Input
-        type="text"
-        placeholder="Ajouter un ingrédient et appuyer sur Entrée"
-        value={inputValue}
-        onChange={handleChange}
-        onKeyDown={handleKeyDown}
-        className="w-full text-sm"
-      />
+      <div className="flex items-center gap-2">
+        <Input
+          type="text"
+          placeholder="Ajouter un ingrédient"
+          value={inputValue}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          className="w-full text-sm"
+        />
+        <Button 
+          type="button" 
+          size="icon" 
+          onClick={addIngredient}
+          className="h-10 w-10 flex-shrink-0 bg-culinary-accent text-culinary-dark hover:bg-culinary-accent/80"
+        >
+          <Plus className="h-5 w-5" />
+        </Button>
+      </div>
       
       <div className="flex flex-wrap gap-2 mt-2">
         {ingredients.map((ingredient, index) => (
