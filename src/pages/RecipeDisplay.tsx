@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Share2, Clock, Award, FileDown, Mail, Smartphone, Printer, HardDrive } from "lucide-react";
@@ -75,6 +74,7 @@ const RecipeDisplay = () => {
 
   const handlePrint = async (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     try {
       await shareRecipe(recipe, recipeImage, 'print');
       setShareOpen(false);
@@ -90,6 +90,7 @@ const RecipeDisplay = () => {
 
   const shareViaEmail = async (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     try {
       setIsSharing(true);
       await shareRecipe(recipe, recipeImage, 'email');
@@ -108,6 +109,7 @@ const RecipeDisplay = () => {
 
   const shareViaWhatsapp = async (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     try {
       setIsSharing(true);
       await shareRecipe(recipe, recipeImage, 'whatsapp');
@@ -126,6 +128,7 @@ const RecipeDisplay = () => {
 
   const exportToPDF = async (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     try {
       setIsSharing(true);
       await shareRecipe(recipe, recipeImage, 'pdf');
@@ -149,6 +152,7 @@ const RecipeDisplay = () => {
 
   const shareToGoogleDrive = async (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     try {
       setIsSharing(true);
       await shareRecipe(recipe, recipeImage, 'gdrive');

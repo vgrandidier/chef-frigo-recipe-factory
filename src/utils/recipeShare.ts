@@ -33,7 +33,7 @@ interface Recipe {
 
 // Format le texte de la recette pour le partage
 export const formatRecipeText = (recipe: Recipe): string => {
-  let recipeText = `CHEF FRIGO\n\n`;
+  let recipeText = ``;
   
   recipeText += `Recette: ${recipe.titre}\n\n`;
   
@@ -71,6 +71,8 @@ export const formatRecipeText = (recipe: Recipe): string => {
   recipeText += `- Lipides: ${recipe.valeurs_nutritionnelles.lipides}\n`;
   recipeText += `- Fibres: ${recipe.valeurs_nutritionnelles.fibres}\n`;
   
+  recipeText += "\nCette recette a été générée par Chef Frigo";
+  
   return recipeText;
 };
 
@@ -88,16 +90,6 @@ export const exportToPDF = async (
   tempElement.style.fontFamily = "Arial, sans-serif";
   
   tempElement.innerHTML = `
-    <div style="text-align: center; margin-bottom: 30px;">
-      <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M6.75 2a4.75 4.75 0 0 0-4.75 4.75v2.5a2.75 2.75 0 0 1 2.75-2.75h2A2.25 2.25 0 0 0 9 4.25V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v.25A2.25 2.25 0 0 0 17.25 6.5h2a2.75 2.75 0 0 1 2.75 2.75v-2.5A4.75 4.75 0 0 0 17.25 2h-10.5Z" fill="#9b87f5"/>
-          <path d="M17.25 7.25h-2A3 3 0 0 1 12 4.5v-.25a1.25 1.25 0 0 0-1.25-1.25h-2A1.25 1.25 0 0 0 7.5 4.25V4.5a3 3 0 0 1-3.25 2.75h-2a2 2 0 0 0-2 2v8.75a4.75 4.75 0 0 0 4.75 4.75h10.5a4.75 4.75 0 0 0 4.75-4.75V9.25a2 2 0 0 0-2-2h-3ZM12.5 17.75a.625.625 0 0 1-.625.625h-6.25a.625.625 0 1 1 0-1.25h6.25c.345 0 .625.28.625.625Zm2.5-4a.625.625 0 0 1-.625.625h-8.75a.625.625 0 1 1 0-1.25h8.75c.345 0 .625.28.625.625Z" fill="#9b87f5"/>
-        </svg>
-        <h1 style="margin: 0; color: #333; font-size: 28px;"><span style="color: #9b87f5;">Chef</span><span style="color: #555;">Frigo</span></h1>
-      </div>
-    </div>
-
     <h1 style="color: #333; font-size: 24px; margin-bottom: 20px; text-align: center;">${recipe.titre}</h1>
     
     <div style="display: flex; justify-content: space-between; margin-bottom: 30px; background-color: #f7f7f7; padding: 15px; border-radius: 8px;">
@@ -142,6 +134,8 @@ export const exportToPDF = async (
       <li style="margin-bottom: 5px;"><span style="font-weight: bold; display: inline-block; width: 100px;">Lipides:</span> ${recipe.valeurs_nutritionnelles.lipides}</li>
       <li style="margin-bottom: 5px;"><span style="font-weight: bold; display: inline-block; width: 100px;">Fibres:</span> ${recipe.valeurs_nutritionnelles.fibres}</li>
     </ul>
+    
+    <p style="text-align: center; margin-top: 30px; color: #777; font-size: 12px; font-style: italic;">Cette recette a été générée par Chef Frigo</p>
   `;
   
   document.body.appendChild(tempElement);
@@ -197,28 +191,15 @@ export const shareRecipe = async (
                 body { font-family: Arial, sans-serif; margin: 20px; }
                 h1 { text-align: center; margin-bottom: 20px; }
                 h2 { margin-top: 30px; color: #9b87f5; border-bottom: 2px solid #9b87f5; padding-bottom: 5px; }
-                .logo { text-align: center; margin-bottom: 30px; display: flex; align-items: center; justify-content: center; }
-                .logo-text { font-size: 24px; margin-left: 8px; }
-                .logo-text span:first-child { color: #9b87f5; }
-                .logo-text span:last-child { color: #555; }
                 .info-bar { display: flex; justify-content: space-between; background-color: #f7f7f7; padding: 15px; border-radius: 8px; margin-bottom: 30px; }
                 .info-item { text-align: center; }
                 .info-item p:first-child { font-weight: bold; margin: 0; color: #555; }
                 ul, ol { padding-left: 20px; }
                 li { margin-bottom: 8px; }
+                .footer { text-align: center; margin-top: 30px; color: #777; font-size: 12px; font-style: italic; }
               </style>
             </head>
             <body>
-              <div class="logo">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M6.75 2a4.75 4.75 0 0 0-4.75 4.75v2.5a2.75 2.75 0 0 1 2.75-2.75h2A2.25 2.25 0 0 0 9 4.25V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v.25A2.25 2.25 0 0 0 17.25 6.5h2a2.75 2.75 0 0 1 2.75 2.75v-2.5A4.75 4.75 0 0 0 17.25 2h-10.5Z" fill="#9b87f5"/>
-                  <path d="M17.25 7.25h-2A3 3 0 0 1 12 4.5v-.25a1.25 1.25 0 0 0-1.25-1.25h-2A1.25 1.25 0 0 0 7.5 4.25V4.5a3 3 0 0 1-3.25 2.75h-2a2 2 0 0 0-2 2v8.75a4.75 4.75 0 0 0 4.75 4.75h10.5a4.75 4.75 0 0 0 4.75-4.75V9.25a2 2 0 0 0-2-2h-3ZM12.5 17.75a.625.625 0 0 1-.625.625h-6.25a.625.625 0 1 1 0-1.25h6.25c.345 0 .625.28.625.625Zm2.5-4a.625.625 0 0 1-.625.625h-8.75a.625.625 0 1 1 0-1.25h8.75c.345 0 .625.28.625.625Z" fill="#9b87f5"/>
-                </svg>
-                <div class="logo-text">
-                  <span>Chef</span><span>Frigo</span>
-                </div>
-              </div>
-              
               <h1>${recipe.titre}</h1>
               
               <div class="info-bar">
@@ -263,6 +244,8 @@ export const shareRecipe = async (
                 <li><strong>Lipides:</strong> ${recipe.valeurs_nutritionnelles.lipides}</li>
                 <li><strong>Fibres:</strong> ${recipe.valeurs_nutritionnelles.fibres}</li>
               </ul>
+              
+              <p class="footer">Cette recette a été générée par Chef Frigo</p>
             </body>
           </html>
         `);
@@ -273,7 +256,7 @@ export const shareRecipe = async (
       } else {
         window.print();
       }
-      break;
+      return Promise.resolve();
       
     case 'email':
       // Utilisation d'une nouvelle fenêtre pour éviter le rechargement
@@ -288,12 +271,12 @@ export const shareRecipe = async (
           }
         }, 500);
       }
-      break;
+      return Promise.resolve();
       
     case 'whatsapp':
       // Ouvrir WhatsApp dans un nouvel onglet
       window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(`${recipeText}`)}`, '_blank');
-      break;
+      return Promise.resolve();
       
     case 'pdf':
       try {
@@ -310,11 +293,11 @@ export const shareRecipe = async (
         
         // Nettoyer l'URL
         setTimeout(() => URL.revokeObjectURL(pdfUrl), 100);
+        return Promise.resolve();
       } catch (error) {
         console.error("Erreur lors de l'export PDF:", error);
         throw error;
       }
-      break;
       
     case 'gdrive':
       try {
@@ -334,7 +317,7 @@ export const shareRecipe = async (
           document.body.removeChild(link);
           
           setTimeout(() => URL.revokeObjectURL(pdfUrl), 100);
-          return;
+          return Promise.resolve();
         }
         
         // Interface simplifiée pour Google Drive (nécessite généralement une configuration avancée)
@@ -350,13 +333,14 @@ export const shareRecipe = async (
         document.body.removeChild(link);
         
         setTimeout(() => URL.revokeObjectURL(pdfUrl), 100);
+        return Promise.resolve();
       } catch (error) {
         console.error("Erreur lors du partage vers Google Drive:", error);
         throw error;
       }
-      break;
       
     default:
       console.error("Méthode de partage non prise en charge");
+      return Promise.resolve();
   }
 };
