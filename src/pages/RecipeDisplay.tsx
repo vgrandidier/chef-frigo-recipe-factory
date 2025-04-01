@@ -13,39 +13,13 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import NutriScore from "@/components/NutriScore";
-import { shareRecipe } from "@/utils/recipeShare";
-
-interface RecipeIngredient {
-  nom: string;
-  quantite: string;
-}
-
-interface RecipeUstensil {
-  nom: string;
-}
-
-interface RecipeNutritionalValues {
-  calories: string;
-  proteines: string;
-  glucides: string;
-  lipides: string;
-  fibres: string;
-}
-
-interface Recipe {
-  titre: string;
-  description: string;
-  ustensiles: RecipeUstensil[];
-  ingredients: RecipeIngredient[];
-  valeurs_nutritionnelles: RecipeNutritionalValues;
-  nutriscore: string;
-  temps_preparation: string;
-  temps_total: string;
-  instructions: Record<string, string[]>;
-}
+import { 
+  shareRecipe,
+  Recipe as RecipeType
+} from "@/utils/recipe";
 
 interface LocationState {
-  recipe: Recipe;
+  recipe: RecipeType;
   recipeImage: string;
 }
 
