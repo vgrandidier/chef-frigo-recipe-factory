@@ -1,3 +1,4 @@
+
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 
@@ -32,15 +33,16 @@ interface Recipe {
 
 // Format le texte de la recette pour le partage
 export const formatRecipeText = (recipe: Recipe): string => {
-  let recipeText = `Recette: ${recipe.titre}\n\n`;
+  let recipeText = `CHEF FRIGO\n\n`;
   
-  recipeText += `Description: ${recipe.description}\n\n`;
+  recipeText += `Recette: ${recipe.titre}\n\n`;
   
   recipeText += `Temps de préparation: ${recipe.temps_preparation}\n`;
   recipeText += `Temps total: ${recipe.temps_total}\n`;
   recipeText += `Nutriscore: ${recipe.nutriscore}\n\n`;
   
-  recipeText += "Ingrédients:\n";
+  recipeText += "INGRÉDIENTS\n";
+  recipeText += "===========\n";
   recipe.ingredients.forEach(ing => {
     recipeText += `- ${ing.nom}: ${ing.quantite}\n`;
   });
@@ -50,7 +52,8 @@ export const formatRecipeText = (recipe: Recipe): string => {
     recipeText += `- ${ust.nom}\n`;
   });
   
-  recipeText += "\nInstructions:\n";
+  recipeText += "\nPRÉPARATION\n";
+  recipeText += "===========\n";
   Object.entries(recipe.instructions).forEach(([category, steps]) => {
     recipeText += `${category}:\n`;
     steps.forEach((step, index) => {
@@ -59,6 +62,8 @@ export const formatRecipeText = (recipe: Recipe): string => {
     recipeText += "\n";
   });
   
+  recipeText += "NUTRITION\n";
+  recipeText += "=========\n";
   recipeText += "Valeurs Nutritionnelles (pour 100g):\n";
   recipeText += `- Calories: ${recipe.valeurs_nutritionnelles.calories}\n`;
   recipeText += `- Protéines: ${recipe.valeurs_nutritionnelles.proteines}\n`;
@@ -83,50 +88,56 @@ export const exportToPDF = async (
   tempElement.style.fontFamily = "Arial, sans-serif";
   
   tempElement.innerHTML = `
-    <h1 style="color: #333; font-size: 24px; margin-bottom: 10px;">${recipe.titre}</h1>
-    <p style="color: #666; margin-bottom: 20px;">${recipe.description}</p>
+    <div style="text-align: center; margin-bottom: 30px;">
+      <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+        <div style="width: 32px; height: 32px; background-color: #6200ee; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">C</div>
+        <h1 style="margin: 0; color: #333; font-size: 28px;"><span style="color: #6200ee;">Chef</span><span style="color: #555;">Frigo</span></h1>
+      </div>
+    </div>
+
+    <h1 style="color: #333; font-size: 24px; margin-bottom: 20px; text-align: center;">${recipe.titre}</h1>
     
-    <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+    <div style="display: flex; justify-content: space-between; margin-bottom: 30px; background-color: #f7f7f7; padding: 15px; border-radius: 8px;">
       <div style="text-align: center;">
-        <p style="font-weight: bold; margin: 0;">Préparation</p>
-        <p>${recipe.temps_preparation}</p>
+        <p style="font-weight: bold; margin: 0; color: #555;">Préparation</p>
+        <p style="margin: 0; color: #333;">${recipe.temps_preparation}</p>
       </div>
       <div style="text-align: center;">
-        <p style="font-weight: bold; margin: 0;">Total</p>
-        <p>${recipe.temps_total}</p>
+        <p style="font-weight: bold; margin: 0; color: #555;">Total</p>
+        <p style="margin: 0; color: #333;">${recipe.temps_total}</p>
       </div>
       <div style="text-align: center;">
-        <p style="font-weight: bold; margin: 0;">Nutriscore</p>
-        <p>${recipe.nutriscore}</p>
+        <p style="font-weight: bold; margin: 0; color: #555;">Nutriscore</p>
+        <p style="margin: 0; color: #333;">${recipe.nutriscore}</p>
       </div>
     </div>
     
-    <h2 style="color: #333; font-size: 18px; margin-top: 30px;">Ingrédients</h2>
+    <h2 style="color: #6200ee; font-size: 20px; margin-top: 30px; border-bottom: 2px solid #6200ee; padding-bottom: 5px;">INGRÉDIENTS</h2>
     <ul style="padding-left: 20px;">
       ${recipe.ingredients.map(ing => `<li><span style="font-weight: bold;">${ing.nom}:</span> ${ing.quantite}</li>`).join('')}
     </ul>
     
-    <h2 style="color: #333; font-size: 18px; margin-top: 30px;">Ustensiles</h2>
+    <h3 style="color: #333; font-size: 18px; margin-top: 20px;">Ustensiles</h3>
     <ul style="padding-left: 20px;">
       ${recipe.ustensiles.map(ust => `<li>${ust.nom}</li>`).join('')}
     </ul>
     
-    <h2 style="color: #333; font-size: 18px; margin-top: 30px;">Instructions</h2>
+    <h2 style="color: #6200ee; font-size: 20px; margin-top: 30px; border-bottom: 2px solid #6200ee; padding-bottom: 5px;">PRÉPARATION</h2>
     ${Object.entries(recipe.instructions).map(([category, steps]) => `
-      <h3 style="color: #555; font-size: 16px;">${category}</h3>
+      <h3 style="color: #555; font-size: 18px; margin-top: 15px;">${category}</h3>
       <ol style="padding-left: 20px;">
-        ${steps.map(step => `<li style="margin-bottom: 8px;">${step}</li>`).join('')}
+        ${steps.map(step => `<li style="margin-bottom: 10px;">${step}</li>`).join('')}
       </ol>
     `).join('')}
     
-    <h2 style="color: #333; font-size: 18px; margin-top: 30px;">Valeurs Nutritionnelles</h2>
+    <h2 style="color: #6200ee; font-size: 20px; margin-top: 30px; border-bottom: 2px solid #6200ee; padding-bottom: 5px;">NUTRITION</h2>
     <p style="font-size: 12px; color: #777; margin-bottom: 10px;">Pour 100g</p>
     <ul style="padding-left: 20px;">
-      <li><span style="font-weight: bold;">Calories:</span> ${recipe.valeurs_nutritionnelles.calories}</li>
-      <li><span style="font-weight: bold;">Protéines:</span> ${recipe.valeurs_nutritionnelles.proteines}</li>
-      <li><span style="font-weight: bold;">Glucides:</span> ${recipe.valeurs_nutritionnelles.glucides}</li>
-      <li><span style="font-weight: bold;">Lipides:</span> ${recipe.valeurs_nutritionnelles.lipides}</li>
-      <li><span style="font-weight: bold;">Fibres:</span> ${recipe.valeurs_nutritionnelles.fibres}</li>
+      <li style="margin-bottom: 5px;"><span style="font-weight: bold; display: inline-block; width: 100px;">Calories:</span> ${recipe.valeurs_nutritionnelles.calories}</li>
+      <li style="margin-bottom: 5px;"><span style="font-weight: bold; display: inline-block; width: 100px;">Protéines:</span> ${recipe.valeurs_nutritionnelles.proteines}</li>
+      <li style="margin-bottom: 5px;"><span style="font-weight: bold; display: inline-block; width: 100px;">Glucides:</span> ${recipe.valeurs_nutritionnelles.glucides}</li>
+      <li style="margin-bottom: 5px;"><span style="font-weight: bold; display: inline-block; width: 100px;">Lipides:</span> ${recipe.valeurs_nutritionnelles.lipides}</li>
+      <li style="margin-bottom: 5px;"><span style="font-weight: bold; display: inline-block; width: 100px;">Fibres:</span> ${recipe.valeurs_nutritionnelles.fibres}</li>
     </ul>
   `;
   
@@ -142,23 +153,7 @@ export const exportToPDF = async (
       format: 'a4',
     });
     
-    // Ajouter l'image de la recette
-    if (recipeImage) {
-      const img = new Image();
-      img.src = recipeImage;
-      await new Promise((resolve) => {
-        img.onload = resolve;
-      });
-      
-      const imgWidth = 180;
-      const imgHeight = (img.height * imgWidth) / img.width;
-      pdf.addImage(recipeImage, 'JPEG', 15, 15, imgWidth, Math.min(imgHeight, 80));
-      pdf.setFontSize(12);
-      pdf.text("Recette générée par ChefFrigo", 15, Math.min(imgHeight, 80) + 25);
-      pdf.addPage();
-    }
-    
-    // Ajouter le contenu principal
+    // Ajouter le contenu principal sans l'image de la recette
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = pdf.internal.pageSize.getHeight();
     pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, (canvas.height * pdfWidth) / canvas.width);
@@ -183,12 +178,94 @@ export const shareRecipe = async (
   recipe: Recipe,
   recipeImage: string,
   method: 'email' | 'whatsapp' | 'pdf' | 'gdrive' | 'print'
-) => {
+): Promise<void> => {
   const recipeText = formatRecipeText(recipe);
   
   switch (method) {
     case 'print':
-      window.print();
+      // Création d'une fenêtre d'impression temporaire avec un style adapté
+      const printWindow = window.open('', '_blank');
+      if (printWindow) {
+        printWindow.document.write(`
+          <html>
+            <head>
+              <title>ChefFrigo - ${recipe.titre}</title>
+              <style>
+                body { font-family: Arial, sans-serif; margin: 20px; }
+                h1 { text-align: center; margin-bottom: 20px; }
+                h2 { margin-top: 30px; color: #6200ee; border-bottom: 2px solid #6200ee; padding-bottom: 5px; }
+                .logo { text-align: center; margin-bottom: 30px; }
+                .logo-text { font-size: 24px; }
+                .logo-text span:first-child { color: #6200ee; }
+                .logo-text span:last-child { color: #555; }
+                .info-bar { display: flex; justify-content: space-between; background-color: #f7f7f7; padding: 15px; border-radius: 8px; margin-bottom: 30px; }
+                .info-item { text-align: center; }
+                .info-item p:first-child { font-weight: bold; margin: 0; color: #555; }
+                ul, ol { padding-left: 20px; }
+                li { margin-bottom: 8px; }
+              </style>
+            </head>
+            <body>
+              <div class="logo">
+                <div class="logo-text">
+                  <span>Chef</span><span>Frigo</span>
+                </div>
+              </div>
+              
+              <h1>${recipe.titre}</h1>
+              
+              <div class="info-bar">
+                <div class="info-item">
+                  <p>Préparation</p>
+                  <p>${recipe.temps_preparation}</p>
+                </div>
+                <div class="info-item">
+                  <p>Total</p>
+                  <p>${recipe.temps_total}</p>
+                </div>
+                <div class="info-item">
+                  <p>Nutriscore</p>
+                  <p>${recipe.nutriscore}</p>
+                </div>
+              </div>
+              
+              <h2>INGRÉDIENTS</h2>
+              <ul>
+                ${recipe.ingredients.map(ing => `<li><strong>${ing.nom}:</strong> ${ing.quantite}</li>`).join('')}
+              </ul>
+              
+              <h3>Ustensiles</h3>
+              <ul>
+                ${recipe.ustensiles.map(ust => `<li>${ust.nom}</li>`).join('')}
+              </ul>
+              
+              <h2>PRÉPARATION</h2>
+              ${Object.entries(recipe.instructions).map(([category, steps]) => `
+                <h3>${category}</h3>
+                <ol>
+                  ${steps.map(step => `<li>${step}</li>`).join('')}
+                </ol>
+              `).join('')}
+              
+              <h2>NUTRITION</h2>
+              <p style="font-size: 12px; color: #777;">Pour 100g</p>
+              <ul>
+                <li><strong>Calories:</strong> ${recipe.valeurs_nutritionnelles.calories}</li>
+                <li><strong>Protéines:</strong> ${recipe.valeurs_nutritionnelles.proteines}</li>
+                <li><strong>Glucides:</strong> ${recipe.valeurs_nutritionnelles.glucides}</li>
+                <li><strong>Lipides:</strong> ${recipe.valeurs_nutritionnelles.lipides}</li>
+                <li><strong>Fibres:</strong> ${recipe.valeurs_nutritionnelles.fibres}</li>
+              </ul>
+            </body>
+          </html>
+        `);
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+        printWindow.close();
+      } else {
+        window.print();
+      }
       break;
       
     case 'email':
@@ -196,7 +273,7 @@ export const shareRecipe = async (
       break;
       
     case 'whatsapp':
-      window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(`Recette: ${recipe.titre}\n\n${recipeText}`)}`);
+      window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(`${recipeText}`)}`);
       break;
       
     case 'pdf':
