@@ -26,4 +26,5 @@ export interface Recipe {
   temps_preparation: string;
   temps_total: string;
   instructions: Record<string, string[]>;
+  nombre_couverts: number;
 }

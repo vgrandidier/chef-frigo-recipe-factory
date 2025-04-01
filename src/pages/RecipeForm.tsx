@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { IngredientInput } from "@/components/IngredientInput";
 import { Logo } from "@/components/Logo";
 import { useToast } from "@/components/ui/use-toast";
@@ -41,6 +42,7 @@ const CUISINE_TYPES = [
 const RecipeForm = () => {
   const [ingredients, setIngredients] = useState<string[]>([]);
   const [cuisineType, setCuisineType] = useState("");
+  const [nombreCouverts, setNombreCouverts] = useState<number>(4);
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
   const [progress, setProgress] = useState(0);
@@ -101,6 +103,15 @@ const RecipeForm = () => {
       return false;
     }
 
+    if (nombreCouverts < 1 || nombreCouverts > 12 || !Number.isInteger(nombreCouverts)) {
+      toast({
+        title: "Nombre de couverts invalide",
+        description: "Le nombre de couverts doit être un nombre entier entre 1 et 12.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
     return true;
   };
 
@@ -154,7 +165,8 @@ const RecipeForm = () => {
       const cleanedResponse = await getMistralRecipe({
         cuisineType,
         ingredients,
-        additionalPrompt
+        additionalPrompt,
+        nombreCouverts
       });
 
       setLoadingMessage("Mise en forme de votre recette...");
@@ -196,6 +208,13 @@ const RecipeForm = () => {
     }
   };
 
+  const handleNombreCouvertsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value);
+    if (!isNaN(value)) {
+      setNombreCouverts(value);
+    }
+  };
+
   return (
     <div className="mobile-container">
       <div className="mobile-header flex-col py-4">
@@ -229,6 +248,21 @@ const RecipeForm = () => {
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">
+                Nombre de couverts :
+              </label>
+              <Input
+                type="number"
+                min="1"
+                max="12"
+                step="1"
+                value={nombreCouverts}
+                onChange={handleNombreCouvertsChange}
+                className="rounded-xl border-gray-200"
+              />
             </div>
 
             <div className="space-y-3">

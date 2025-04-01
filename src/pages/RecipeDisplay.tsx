@@ -1,14 +1,14 @@
 
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Clock, Award } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MobileNavigation } from "@/components/MobileNavigation";
 import { Logo } from "@/components/Logo";
 import { useToast } from "@/components/ui/use-toast";
-import NutriScore from "@/components/NutriScore";
+import { RecipeInfo } from "@/components/RecipeInfo";
+import { RecipeIngredients } from "@/components/RecipeIngredients";
+import { RecipeInstructions } from "@/components/RecipeInstructions";
+import { RecipeNutrition } from "@/components/RecipeNutrition";
 import { 
   shareRecipe,
   Recipe as RecipeType
@@ -32,10 +32,6 @@ const RecipeDisplay = () => {
   }
 
   const { recipe, recipeImage } = state;
-
-  const handleShare = () => {
-    // Cette fonction est maintenant gérée par le composant MobileNavigation
-  };
 
   const handlePrint = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -113,25 +109,7 @@ const RecipeDisplay = () => {
           </div>
         </div>
 
-        <div className="flex justify-between px-4 py-3 border-b">
-          <div className="flex flex-col items-center">
-            <Clock size={16} className="mb-1 text-gray-600" />
-            <span className="text-xs font-medium">Préparation</span>
-            <span className="text-sm">{recipe.temps_preparation}</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <Clock size={16} className="mb-1 text-gray-600" />
-            <span className="text-xs font-medium">Total</span>
-            <span className="text-sm">{recipe.temps_total}</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <Award size={16} className="mb-1 text-gray-600" />
-            <span className="text-xs font-medium">Nutriscore</span>
-            <div className="mt-1">
-              <NutriScore score={recipe.nutriscore} size="sm" />
-            </div>
-          </div>
-        </div>
+        <RecipeInfo recipe={recipe} />
 
         <Tabs defaultValue="ingredients" className="w-full">
           <TabsList className="mobile-tabs">
@@ -148,106 +126,15 @@ const RecipeDisplay = () => {
 
           <div className="p-4">
             <TabsContent value="ingredients" className="mt-0 space-y-4">
-              <div>
-                <h3 className="text-lg font-medium mb-3">Ingrédients</h3>
-                <ul className="space-y-3">
-                  {recipe.ingredients.map((ingredient, index) => (
-                    <li
-                      key={`ingredient-${index}`}
-                      className="flex justify-between items-center pb-2 border-b border-gray-100"
-                    >
-                      <span className="text-sm">{ingredient.nom}</span>
-                      <span className="font-medium text-sm text-gray-700">
-                        {ingredient.quantite}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div>
-                <h3 className="text-lg font-medium mb-3">Ustensiles</h3>
-                <div className="grid grid-cols-2 gap-2">
-                  {recipe.ustensiles.map((ustensile, index) => (
-                    <div
-                      key={`ustensile-${index}`}
-                      className="flex items-center gap-2 bg-gray-50 rounded-xl p-2"
-                    >
-                      <span className="w-2 h-2 rounded-full bg-primary"></span>
-                      <span className="text-sm">{ustensile.nom}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <RecipeIngredients recipe={recipe} />
             </TabsContent>
 
             <TabsContent value="preparation" className="mt-0">
-              <h3 className="text-lg font-medium mb-3">Instructions</h3>
-              {Object.entries(recipe.instructions).map(
-                ([category, steps], categoryIndex) => (
-                  <div key={`cat-${categoryIndex}`} className="mb-6">
-                    <h4 className="font-medium text-primary mb-3 text-sm">
-                      {category}
-                    </h4>
-                    <ol className="space-y-4">
-                      {steps.map((step, stepIndex) => (
-                        <li
-                          key={`step-${categoryIndex}-${stepIndex}`}
-                          className="text-sm"
-                        >
-                          <div className="flex">
-                            <span className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary mr-3 text-xs">
-                              {stepIndex + 1}
-                            </span>
-                            <span>{cleanInstructionText(step)}</span>
-                          </div>
-                        </li>
-                      ))}
-                    </ol>
-                  </div>
-                )
-              )}
+              <RecipeInstructions recipe={recipe} cleanInstructionText={cleanInstructionText} />
             </TabsContent>
 
             <TabsContent value="nutrition" className="mt-0">
-              <h3 className="text-lg font-medium mb-3">
-                Valeurs Nutritionnelles
-              </h3>
-
-              <p className="text-xs text-gray-500 mb-4">Pour 100g</p>
-
-              <div className="space-y-4">
-                <div className="bg-gray-50 p-3 rounded-xl flex justify-between items-center">
-                  <span className="font-medium text-sm">Calories</span>
-                  <span className="text-sm">
-                    {recipe.valeurs_nutritionnelles.calories}
-                  </span>
-                </div>
-                <div className="bg-gray-50 p-3 rounded-xl flex justify-between items-center">
-                  <span className="font-medium text-sm">Protéines</span>
-                  <span className="text-sm">
-                    {recipe.valeurs_nutritionnelles.proteines}
-                  </span>
-                </div>
-                <div className="bg-gray-50 p-3 rounded-xl flex justify-between items-center">
-                  <span className="font-medium text-sm">Glucides</span>
-                  <span className="text-sm">
-                    {recipe.valeurs_nutritionnelles.glucides}
-                  </span>
-                </div>
-                <div className="bg-gray-50 p-3 rounded-xl flex justify-between items-center">
-                  <span className="font-medium text-sm">Lipides</span>
-                  <span className="text-sm">
-                    {recipe.valeurs_nutritionnelles.lipides}
-                  </span>
-                </div>
-                <div className="bg-gray-50 p-3 rounded-xl flex justify-between items-center">
-                  <span className="font-medium text-sm">Fibres</span>
-                  <span className="text-sm">
-                    {recipe.valeurs_nutritionnelles.fibres}
-                  </span>
-                </div>
-              </div>
+              <RecipeNutrition recipe={recipe} />
             </TabsContent>
           </div>
         </Tabs>

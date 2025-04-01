@@ -43,7 +43,7 @@ serve(async (req) => {
       );
     }
     
-    const { cuisineType, ingredients, additionalPrompt } = requestBody;
+    const { cuisineType, ingredients, additionalPrompt, nombreCouverts = 4 } = requestBody;
 
     // Validation des paramètres
     if (!cuisineType || !ingredients || !Array.isArray(ingredients)) {
@@ -54,13 +54,13 @@ serve(async (req) => {
       );
     }
 
-    console.log("Traitement de la requête avec les paramètres:", { cuisineType, ingredients, additionalPrompt });
+    console.log("Traitement de la requête avec les paramètres:", { cuisineType, ingredients, additionalPrompt, nombreCouverts });
     console.log("Clé API Mistral vérifiée:", apiKey ? "présente" : "absente");
 
     // Construction du prompt
     const prompt = `Je voudrais une recette de type ${cuisineType} avec ${ingredients.join(
       ", "
-    )}. ${additionalPrompt}En retour, je veux un titre, une description, la liste des ustensiles nécessaires, la liste complète des ingrédients avec les quantités, les valeurs nutritionnelles pour 100g (kcal, protéines, glucides, lipides, fibres), le Nutri-Score, le temps de préparation, le temps total, et les instructions pour la réalisation de la recette par étape. Les instructions doivent être regroupées par type de travail (préparation, cuisson, montage, etc.), et chaque groupe doit avoir un titre. Formate le résultat en JSON avec la structure suivante :
+    )} pour ${nombreCouverts} personnes. ${additionalPrompt}En retour, je veux un titre, une description, la liste des ustensiles nécessaires, la liste complète des ingrédients avec les quantités, les valeurs nutritionnelles pour 100g (kcal, protéines, glucides, lipides, fibres), le Nutri-Score, le temps de préparation, le temps total, et les instructions pour la réalisation de la recette par étape. Les instructions doivent être regroupées par type de travail (préparation, cuisson, montage, etc.), et chaque groupe doit avoir un titre. Formate le résultat en JSON avec la structure suivante :
     {
       "titre": "Nom de la recette",
       "description": "Description de la recette",
@@ -82,6 +82,7 @@ serve(async (req) => {
       "nutriscore": "Valeur du Nutri-Score",
       "temps_preparation": "Intervalle de temps de préparation en minutes (ex: 20-25 minutes)",
       "temps_total": "Intervalle de temps total en minutes (ex: 35-40 minutes)",
+      "nombre_couverts": ${nombreCouverts},
       "instructions": {
         "Préparation": [
           "Étape 1 : Description de l'étape.",

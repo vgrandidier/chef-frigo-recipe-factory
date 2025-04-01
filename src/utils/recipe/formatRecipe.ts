@@ -9,6 +9,7 @@ export const formatRecipeText = (recipe: Recipe): string => {
   
   recipeText += `Temps de préparation: ${recipe.temps_preparation}\n`;
   recipeText += `Temps total: ${recipe.temps_total}\n`;
+  recipeText += `Nombre de couverts: ${recipe.nombre_couverts || 4}\n`;
   recipeText += `Nutriscore: ${recipe.nutriscore}\n\n`;
   
   recipeText += "INGRÉDIENTS\n";

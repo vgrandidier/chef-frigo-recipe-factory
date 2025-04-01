@@ -39,6 +39,10 @@ export const printRecipe = (recipe: Recipe): Promise<void> => {
               <p>${recipe.temps_total}</p>
             </div>
             <div class="info-item">
+              <p>Couverts</p>
+              <p>${recipe.nombre_couverts || 4}</p>
+            </div>
+            <div class="info-item">
               <p>Nutriscore</p>
               <p>${recipe.nutriscore}</p>
             </div>
