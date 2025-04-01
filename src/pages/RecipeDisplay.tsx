@@ -1,6 +1,7 @@
+
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Share2, Clock, Award } from "lucide-react";
+import { Share2, Clock, Award, FileDown, Mail, Smartphone, Printer, HardDrive } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -13,6 +14,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import NutriScore from "@/components/NutriScore";
+import { shareRecipe } from "@/utils/recipeShare";
 
 interface RecipeIngredient {
   nom: string;
@@ -54,6 +56,7 @@ const RecipeDisplay = () => {
   const state = location.state as LocationState;
   const { toast } = useToast();
   const [shareOpen, setShareOpen] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
 
   if (!state || !state.recipe) {
     navigate("/");
@@ -62,40 +65,79 @@ const RecipeDisplay = () => {
 
   const { recipe, recipeImage } = state;
 
-  const handlePrint = () => {
-    window.print();
-  };
-
   const handleShare = () => {
     setShareOpen(true);
   };
 
-  const handleCopyLink = () => {
-    const url = window.location.href;
-    navigator.clipboard.writeText(url).then(() => {
+  const handlePrint = () => {
+    shareRecipe(recipe, recipeImage, 'print');
+  };
+
+  const shareViaEmail = async () => {
+    try {
+      await shareRecipe(recipe, recipeImage, 'email');
+      setShareOpen(false);
+    } catch (error) {
+      console.error("Erreur lors du partage par email:", error);
       toast({
-        title: "Lien copié !",
-        description: "Le lien a été copié dans le presse-papier.",
+        title: "Erreur",
+        description: "Impossible de partager par email. Veuillez réessayer.",
         duration: 3000,
       });
+    }
+  };
+
+  const shareViaWhatsapp = async () => {
+    try {
+      await shareRecipe(recipe, recipeImage, 'whatsapp');
       setShareOpen(false);
-    });
+    } catch (error) {
+      console.error("Erreur lors du partage WhatsApp:", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de partager via WhatsApp. Veuillez réessayer.",
+        duration: 3000,
+      });
+    }
   };
 
-  const shareViaEmail = () => {
-    const url = window.location.href;
-    window.open(
-      `mailto:?subject=Une recette pour toi de ChefFrigo&body=Regarde cette recette que j'ai trouvée: ${url}`
-    );
-    setShareOpen(false);
+  const exportToPDF = async () => {
+    try {
+      setIsSharing(true);
+      await shareRecipe(recipe, recipeImage, 'pdf');
+      setShareOpen(false);
+      toast({
+        title: "Succès",
+        description: "La recette a été exportée en PDF.",
+        duration: 3000,
+      });
+    } catch (error) {
+      console.error("Erreur lors de l'export PDF:", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible d'exporter en PDF. Veuillez réessayer.",
+        duration: 3000,
+      });
+    } finally {
+      setIsSharing(false);
+    }
   };
 
-  const shareViaWhatsapp = () => {
-    const url = window.location.href;
-    window.open(
-      `https://api.whatsapp.com/send?text=Regarde cette recette que j'ai trouvée: ${url}`
-    );
-    setShareOpen(false);
+  const shareToGoogleDrive = async () => {
+    try {
+      setIsSharing(true);
+      await shareRecipe(recipe, recipeImage, 'gdrive');
+      setShareOpen(false);
+    } catch (error) {
+      console.error("Erreur lors du partage Google Drive:", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de partager vers Google Drive. Veuillez réessayer.",
+        duration: 3000,
+      });
+    } finally {
+      setIsSharing(false);
+    }
   };
 
   return (
@@ -265,74 +307,45 @@ const RecipeDisplay = () => {
               onClick={shareViaEmail}
               variant="outline"
               className="justify-start"
+              disabled={isSharing}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="mr-2"
-              >
-                <rect width="20" height="16" x="2" y="4" rx="2" />
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-              </svg>
+              <Mail className="mr-2 h-4 w-4" />
               Email
             </Button>
             <Button
               onClick={shareViaWhatsapp}
               variant="outline"
               className="justify-start"
+              disabled={isSharing}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="mr-2"
-              >
-                <path d="M21 13.34c0 4.97-4.5 9-10 9a9.8 9.8 0 0 1-5.3-1.5L2 22l1.3-3.9A8.94 8.94 0 0 1 2 13.34C2 8.38 6.5 4.35 12 4.35c5.5 0 9 4.03 9 9ZM9.5 7.84v8.33M14.5 7.84v8.33M8 12.84h8" />
-              </svg>
+              <Smartphone className="mr-2 h-4 w-4" />
               WhatsApp
             </Button>
             <Button
-              onClick={handleCopyLink}
+              onClick={exportToPDF}
               variant="outline"
               className="justify-start"
+              disabled={isSharing}
             >
-              <Share2 className="mr-2 h-4 w-4" />
-              Copier le lien
+              <FileDown className="mr-2 h-4 w-4" />
+              Exporter en PDF
+            </Button>
+            <Button
+              onClick={shareToGoogleDrive}
+              variant="outline"
+              className="justify-start"
+              disabled={isSharing}
+            >
+              <HardDrive className="mr-2 h-4 w-4" />
+              Google Drive
             </Button>
             <Button
               onClick={handlePrint}
               variant="outline"
               className="justify-start"
+              disabled={isSharing}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="mr-2"
-              >
-                <polyline points="6 9 6 2 18 2 18 9" />
-                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
-                <rect width="12" height="8" x="6" y="14" />
-              </svg>
+              <Printer className="mr-2 h-4 w-4" />
               Imprimer
             </Button>
           </div>
