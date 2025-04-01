@@ -90,8 +90,11 @@ export const exportToPDF = async (
   tempElement.innerHTML = `
     <div style="text-align: center; margin-bottom: 30px;">
       <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-        <div style="width: 32px; height: 32px; background-color: #6200ee; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">C</div>
-        <h1 style="margin: 0; color: #333; font-size: 28px;"><span style="color: #6200ee;">Chef</span><span style="color: #555;">Frigo</span></h1>
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6.75 2a4.75 4.75 0 0 0-4.75 4.75v2.5a2.75 2.75 0 0 1 2.75-2.75h2A2.25 2.25 0 0 0 9 4.25V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v.25A2.25 2.25 0 0 0 17.25 6.5h2a2.75 2.75 0 0 1 2.75 2.75v-2.5A4.75 4.75 0 0 0 17.25 2h-10.5Z" fill="#9b87f5"/>
+          <path d="M17.25 7.25h-2A3 3 0 0 1 12 4.5v-.25a1.25 1.25 0 0 0-1.25-1.25h-2A1.25 1.25 0 0 0 7.5 4.25V4.5a3 3 0 0 1-3.25 2.75h-2a2 2 0 0 0-2 2v8.75a4.75 4.75 0 0 0 4.75 4.75h10.5a4.75 4.75 0 0 0 4.75-4.75V9.25a2 2 0 0 0-2-2h-3ZM12.5 17.75a.625.625 0 0 1-.625.625h-6.25a.625.625 0 1 1 0-1.25h6.25c.345 0 .625.28.625.625Zm2.5-4a.625.625 0 0 1-.625.625h-8.75a.625.625 0 1 1 0-1.25h8.75c.345 0 .625.28.625.625Z" fill="#9b87f5"/>
+        </svg>
+        <h1 style="margin: 0; color: #333; font-size: 28px;"><span style="color: #9b87f5;">Chef</span><span style="color: #555;">Frigo</span></h1>
       </div>
     </div>
 
@@ -112,7 +115,7 @@ export const exportToPDF = async (
       </div>
     </div>
     
-    <h2 style="color: #6200ee; font-size: 20px; margin-top: 30px; border-bottom: 2px solid #6200ee; padding-bottom: 5px;">INGRÉDIENTS</h2>
+    <h2 style="color: #9b87f5; font-size: 20px; margin-top: 30px; border-bottom: 2px solid #9b87f5; padding-bottom: 5px;">INGRÉDIENTS</h2>
     <ul style="padding-left: 20px;">
       ${recipe.ingredients.map(ing => `<li><span style="font-weight: bold;">${ing.nom}:</span> ${ing.quantite}</li>`).join('')}
     </ul>
@@ -122,7 +125,7 @@ export const exportToPDF = async (
       ${recipe.ustensiles.map(ust => `<li>${ust.nom}</li>`).join('')}
     </ul>
     
-    <h2 style="color: #6200ee; font-size: 20px; margin-top: 30px; border-bottom: 2px solid #6200ee; padding-bottom: 5px;">PRÉPARATION</h2>
+    <h2 style="color: #9b87f5; font-size: 20px; margin-top: 30px; border-bottom: 2px solid #9b87f5; padding-bottom: 5px;">PRÉPARATION</h2>
     ${Object.entries(recipe.instructions).map(([category, steps]) => `
       <h3 style="color: #555; font-size: 18px; margin-top: 15px;">${category}</h3>
       <ol style="padding-left: 20px;">
@@ -130,7 +133,7 @@ export const exportToPDF = async (
       </ol>
     `).join('')}
     
-    <h2 style="color: #6200ee; font-size: 20px; margin-top: 30px; border-bottom: 2px solid #6200ee; padding-bottom: 5px;">NUTRITION</h2>
+    <h2 style="color: #9b87f5; font-size: 20px; margin-top: 30px; border-bottom: 2px solid #9b87f5; padding-bottom: 5px;">NUTRITION</h2>
     <p style="font-size: 12px; color: #777; margin-bottom: 10px;">Pour 100g</p>
     <ul style="padding-left: 20px;">
       <li style="margin-bottom: 5px;"><span style="font-weight: bold; display: inline-block; width: 100px;">Calories:</span> ${recipe.valeurs_nutritionnelles.calories}</li>
@@ -173,7 +176,7 @@ declare global {
   }
 }
 
-// Partage la recette via l'API Web Share si disponible
+// Partage la recette via différentes méthodes
 export const shareRecipe = async (
   recipe: Recipe,
   recipeImage: string,
@@ -193,10 +196,10 @@ export const shareRecipe = async (
               <style>
                 body { font-family: Arial, sans-serif; margin: 20px; }
                 h1 { text-align: center; margin-bottom: 20px; }
-                h2 { margin-top: 30px; color: #6200ee; border-bottom: 2px solid #6200ee; padding-bottom: 5px; }
-                .logo { text-align: center; margin-bottom: 30px; }
-                .logo-text { font-size: 24px; }
-                .logo-text span:first-child { color: #6200ee; }
+                h2 { margin-top: 30px; color: #9b87f5; border-bottom: 2px solid #9b87f5; padding-bottom: 5px; }
+                .logo { text-align: center; margin-bottom: 30px; display: flex; align-items: center; justify-content: center; }
+                .logo-text { font-size: 24px; margin-left: 8px; }
+                .logo-text span:first-child { color: #9b87f5; }
                 .logo-text span:last-child { color: #555; }
                 .info-bar { display: flex; justify-content: space-between; background-color: #f7f7f7; padding: 15px; border-radius: 8px; margin-bottom: 30px; }
                 .info-item { text-align: center; }
@@ -207,6 +210,10 @@ export const shareRecipe = async (
             </head>
             <body>
               <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M6.75 2a4.75 4.75 0 0 0-4.75 4.75v2.5a2.75 2.75 0 0 1 2.75-2.75h2A2.25 2.25 0 0 0 9 4.25V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v.25A2.25 2.25 0 0 0 17.25 6.5h2a2.75 2.75 0 0 1 2.75 2.75v-2.5A4.75 4.75 0 0 0 17.25 2h-10.5Z" fill="#9b87f5"/>
+                  <path d="M17.25 7.25h-2A3 3 0 0 1 12 4.5v-.25a1.25 1.25 0 0 0-1.25-1.25h-2A1.25 1.25 0 0 0 7.5 4.25V4.5a3 3 0 0 1-3.25 2.75h-2a2 2 0 0 0-2 2v8.75a4.75 4.75 0 0 0 4.75 4.75h10.5a4.75 4.75 0 0 0 4.75-4.75V9.25a2 2 0 0 0-2-2h-3ZM12.5 17.75a.625.625 0 0 1-.625.625h-6.25a.625.625 0 1 1 0-1.25h6.25c.345 0 .625.28.625.625Zm2.5-4a.625.625 0 0 1-.625.625h-8.75a.625.625 0 1 1 0-1.25h8.75c.345 0 .625.28.625.625Z" fill="#9b87f5"/>
+                </svg>
                 <div class="logo-text">
                   <span>Chef</span><span>Frigo</span>
                 </div>
@@ -269,27 +276,44 @@ export const shareRecipe = async (
       break;
       
     case 'email':
-      window.open(`mailto:?subject=${encodeURIComponent(`Recette: ${recipe.titre}`)}&body=${encodeURIComponent(recipeText)}`);
+      // Utilisation d'une nouvelle fenêtre pour éviter le rechargement
+      const emailWindow = window.open(`mailto:?subject=${encodeURIComponent(`Recette: ${recipe.titre}`)}&body=${encodeURIComponent(recipeText)}`, '_blank');
+      if (emailWindow) {
+        // Fermer la fenêtre après un court délai si possible
+        setTimeout(() => {
+          try {
+            if (!emailWindow.closed) emailWindow.close();
+          } catch (e) {
+            // Ignorer les erreurs de cross-origin
+          }
+        }, 500);
+      }
       break;
       
     case 'whatsapp':
-      window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(`${recipeText}`)}`);
+      // Ouvrir WhatsApp dans un nouvel onglet
+      window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(`${recipeText}`)}`, '_blank');
       break;
       
     case 'pdf':
-      const pdfBlob = await exportToPDF(recipe, recipeImage);
-      const pdfUrl = URL.createObjectURL(pdfBlob);
-      
-      // Créer un lien pour télécharger le PDF
-      const link = document.createElement('a');
-      link.href = pdfUrl;
-      link.download = `recette-${recipe.titre.toLowerCase().replace(/\s+/g, '-')}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      // Nettoyer l'URL
-      setTimeout(() => URL.revokeObjectURL(pdfUrl), 100);
+      try {
+        const pdfBlob = await exportToPDF(recipe, recipeImage);
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+        
+        // Créer un lien pour télécharger le PDF
+        const link = document.createElement('a');
+        link.href = pdfUrl;
+        link.download = `recette-${recipe.titre.toLowerCase().replace(/\s+/g, '-')}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Nettoyer l'URL
+        setTimeout(() => URL.revokeObjectURL(pdfUrl), 100);
+      } catch (error) {
+        console.error("Erreur lors de l'export PDF:", error);
+        throw error;
+      }
       break;
       
     case 'gdrive':
@@ -328,7 +352,7 @@ export const shareRecipe = async (
         setTimeout(() => URL.revokeObjectURL(pdfUrl), 100);
       } catch (error) {
         console.error("Erreur lors du partage vers Google Drive:", error);
-        alert("Une erreur est survenue lors du partage vers Google Drive. Veuillez essayer l'option de téléchargement PDF.");
+        throw error;
       }
       break;
       

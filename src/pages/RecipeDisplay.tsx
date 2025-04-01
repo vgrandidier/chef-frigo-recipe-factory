@@ -65,16 +65,33 @@ const RecipeDisplay = () => {
 
   const { recipe, recipeImage } = state;
 
-  const handleShare = () => {
+  const handleShare = (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     setShareOpen(prev => !prev);
   };
 
-  const handlePrint = () => {
-    shareRecipe(recipe, recipeImage, 'print');
+  const handlePrint = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    try {
+      await shareRecipe(recipe, recipeImage, 'print');
+      setShareOpen(false);
+    } catch (error) {
+      console.error("Erreur lors de l'impression:", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible d'imprimer la recette. Veuillez réessayer.",
+        duration: 3000,
+      });
+    }
   };
 
-  const shareViaEmail = async () => {
+  const shareViaEmail = async (e: React.MouseEvent) => {
+    e.preventDefault();
     try {
+      setIsSharing(true);
       await shareRecipe(recipe, recipeImage, 'email');
       setShareOpen(false);
     } catch (error) {
@@ -84,11 +101,15 @@ const RecipeDisplay = () => {
         description: "Impossible de partager par email. Veuillez réessayer.",
         duration: 3000,
       });
+    } finally {
+      setIsSharing(false);
     }
   };
 
-  const shareViaWhatsapp = async () => {
+  const shareViaWhatsapp = async (e: React.MouseEvent) => {
+    e.preventDefault();
     try {
+      setIsSharing(true);
       await shareRecipe(recipe, recipeImage, 'whatsapp');
       setShareOpen(false);
     } catch (error) {
@@ -98,10 +119,13 @@ const RecipeDisplay = () => {
         description: "Impossible de partager via WhatsApp. Veuillez réessayer.",
         duration: 3000,
       });
+    } finally {
+      setIsSharing(false);
     }
   };
 
-  const exportToPDF = async () => {
+  const exportToPDF = async (e: React.MouseEvent) => {
+    e.preventDefault();
     try {
       setIsSharing(true);
       await shareRecipe(recipe, recipeImage, 'pdf');
@@ -123,7 +147,8 @@ const RecipeDisplay = () => {
     }
   };
 
-  const shareToGoogleDrive = async () => {
+  const shareToGoogleDrive = async (e: React.MouseEvent) => {
+    e.preventDefault();
     try {
       setIsSharing(true);
       await shareRecipe(recipe, recipeImage, 'gdrive');
