@@ -1,17 +1,12 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Share2, Clock, Award, Mail, Smartphone, Printer } from "lucide-react";
+import { Clock, Award } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MobileNavigation } from "@/components/MobileNavigation";
 import { Logo } from "@/components/Logo";
 import { useToast } from "@/components/ui/use-toast";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import NutriScore from "@/components/NutriScore";
 import { 
   shareRecipe,
@@ -28,7 +23,6 @@ const RecipeDisplay = () => {
   const navigate = useNavigate();
   const state = location.state as LocationState;
   const { toast } = useToast();
-  const [shareOpen, setShareOpen] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
 
   if (!state || !state.recipe) {
@@ -38,12 +32,8 @@ const RecipeDisplay = () => {
 
   const { recipe, recipeImage } = state;
 
-  const handleShare = (e?: React.MouseEvent) => {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    setShareOpen(prev => !prev);
+  const handleShare = () => {
+    // Cette fonction est maintenant gérée par le composant MobileNavigation
   };
 
   const handlePrint = async (e: React.MouseEvent) => {
@@ -51,7 +41,6 @@ const RecipeDisplay = () => {
     e.stopPropagation();
     try {
       await shareRecipe(recipe, recipeImage, 'print');
-      setShareOpen(false);
     } catch (error) {
       console.error("Erreur lors de l'impression:", error);
       toast({
@@ -68,7 +57,6 @@ const RecipeDisplay = () => {
     try {
       setIsSharing(true);
       await shareRecipe(recipe, recipeImage, 'email');
-      setShareOpen(false);
     } catch (error) {
       console.error("Erreur lors du partage par email:", error);
       toast({
@@ -87,7 +75,6 @@ const RecipeDisplay = () => {
     try {
       setIsSharing(true);
       await shareRecipe(recipe, recipeImage, 'whatsapp');
-      setShareOpen(false);
     } catch (error) {
       console.error("Erreur lors du partage WhatsApp:", error);
       toast({
@@ -260,53 +247,29 @@ const RecipeDisplay = () => {
         </Tabs>
       </div>
 
-      <div className="fixed bottom-0 right-0 p-4 no-print z-50">
-        <Popover open={shareOpen} onOpenChange={setShareOpen}>
-          <PopoverTrigger asChild>
-            <Button 
-              onClick={handleShare}
-              variant="outline" 
-              size="icon" 
-              className="rounded-full shadow-md"
-            >
-              <Share2 className="h-4 w-4" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-56 p-2" align="end">
-            <div className="grid gap-2">
-              <Button
-                onClick={shareViaEmail}
-                variant="outline"
-                className="justify-start"
-                disabled={isSharing}
-              >
-                <Mail className="mr-2 h-4 w-4" />
-                Email
-              </Button>
-              <Button
-                onClick={shareViaWhatsapp}
-                variant="outline"
-                className="justify-start"
-                disabled={isSharing}
-              >
-                <Smartphone className="mr-2 h-4 w-4" />
-                WhatsApp
-              </Button>
-              <Button
-                onClick={handlePrint}
-                variant="outline"
-                className="justify-start"
-                disabled={isSharing}
-              >
-                <Printer className="mr-2 h-4 w-4" />
-                Imprimer
-              </Button>
-            </div>
-          </PopoverContent>
-        </Popover>
-      </div>
-
-      <MobileNavigation showShareButton={true} onShare={handleShare} />
+      <MobileNavigation 
+        showShareButton={true} 
+        onShare={() => {
+          const shareOptions = [
+            { 
+              label: "Email",
+              action: (e: any) => shareViaEmail(e)
+            },
+            {
+              label: "WhatsApp",
+              action: (e: any) => shareViaWhatsapp(e)
+            },
+            {
+              label: "Imprimer",
+              action: (e: any) => handlePrint(e)
+            }
+          ];
+          
+          // Ici, vous pourriez utiliser un gestionnaire d'état global ou un service
+          // pour montrer une boîte de dialogue avec ces options
+          // Pour l'instant, nous utilisons la navigation mobile existante
+        }}
+      />
     </div>
   );
 };
