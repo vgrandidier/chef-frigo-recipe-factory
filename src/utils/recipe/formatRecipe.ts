@@ -27,7 +27,9 @@ export const formatRecipeText = (recipe: Recipe): string => {
   Object.entries(recipe.instructions).forEach(([category, steps]) => {
     recipeText += `${category}:\n`;
     steps.forEach((step, index) => {
-      recipeText += `${index + 1}. ${step}\n`;
+      // Supprimer les préfixes "Étape x : " des instructions
+      const cleanedStep = step.replace(/^Étape\s+\d+\s*:\s*/i, '');
+      recipeText += `${index + 1}. ${cleanedStep}\n`;
     });
     recipeText += "\n";
   });

@@ -3,6 +3,12 @@ import { Recipe } from '../types';
 
 export const printRecipe = (recipe: Recipe): Promise<void> => {
   const printWindow = window.open('', '_blank');
+  
+  // Fonction pour nettoyer les instructions en supprimant les "Étape x : " au début
+  const cleanInstructionText = (step: string): string => {
+    return step.replace(/^Étape\s+\d+\s*:\s*/i, '');
+  };
+  
   if (printWindow) {
     printWindow.document.write(`
       <html>
@@ -52,7 +58,7 @@ export const printRecipe = (recipe: Recipe): Promise<void> => {
           ${Object.entries(recipe.instructions).map(([category, steps]) => `
             <h3>${category}</h3>
             <ol>
-              ${steps.map(step => `<li>${step}</li>`).join('')}
+              ${steps.map(step => `<li>${cleanInstructionText(step)}</li>`).join('')}
             </ol>
           `).join('')}
           

@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Clock, Award } from "lucide-react";
@@ -85,6 +86,11 @@ const RecipeDisplay = () => {
     } finally {
       setIsSharing(false);
     }
+  };
+
+  // Fonction pour nettoyer les instructions en supprimant les "Étape x : " au début
+  const cleanInstructionText = (step: string): string => {
+    return step.replace(/^Étape\s+\d+\s*:\s*/i, '');
   };
 
   return (
@@ -193,7 +199,7 @@ const RecipeDisplay = () => {
                             <span className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary mr-3 text-xs">
                               {stepIndex + 1}
                             </span>
-                            <span>{step}</span>
+                            <span>{cleanInstructionText(step)}</span>
                           </div>
                         </li>
                       ))}
