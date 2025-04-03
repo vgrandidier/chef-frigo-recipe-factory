@@ -131,7 +131,7 @@ const RecipeForm = () => {
     const additionalRequirements = [];
     if (fondDeFrigo) {
       additionalRequirements.push(
-        "en utilisant le minimum d'ingrédients et avec des substitutions possibles pour les ingrédients courants"
+        "en utilisant uniquement les ingrédients fournis et en ajoutant uniquement des assaisonements de base"
       );
     } else {
       additionalRequirements.push(
@@ -148,7 +148,7 @@ const RecipeForm = () => {
       );
     if (gourmet) {
       additionalRequirements.push(
-        "en ajoutant des ingrédients additionnels de qualité et en les utilisant de manière gastronomique"
+        "en ajoutant des ingrédients additionnels de qualité et en les utilisant dans une recette digne d'un restaurant gastronomique"
       );
     }
 
