@@ -280,6 +280,77 @@ export type Database = {
           },
         ]
       }
+      module_data: {
+        Row: {
+          created_at: string
+          data: Json | null
+          id: string
+          module_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json | null
+          id?: string
+          module_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json | null
+          id?: string
+          module_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "module_data_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "modules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      modules: {
+        Row: {
+          config: Json | null
+          created_at: string
+          description: string | null
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          route: string | null
+          title: string
+          type: string | null
+        }
+        Insert: {
+          config?: Json | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          route?: string | null
+          title: string
+          type?: string | null
+        }
+        Update: {
+          config?: Json | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          route?: string | null
+          title?: string
+          type?: string | null
+        }
+        Relationships: []
+      }
       recipes: {
         Row: {
           created_at: string | null
@@ -328,24 +399,59 @@ export type Database = {
         }
         Relationships: []
       }
+      user_modules: {
+        Row: {
+          created_at: string
+          id: string
+          module_id: string
+          position: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          module_id: string
+          position?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          module_id?: string
+          position?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_modules_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "modules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_profiles: {
         Row: {
           created_at: string
           full_name: string | null
           id: string
           photo_url: string | null
+          role: string
         }
         Insert: {
           created_at?: string
           full_name?: string | null
           id: string
           photo_url?: string | null
+          role?: string
         }
         Update: {
           created_at?: string
           full_name?: string | null
           id?: string
           photo_url?: string | null
+          role?: string
         }
         Relationships: []
       }

@@ -39,10 +39,19 @@ const CUISINE_TYPES = [
   "Thaïe",
 ];
 
+const COOKING_TYPES = [
+  "Cuisine traditionnelle",
+  "Air Fryer",
+  "Barbecue / Plancha",
+];
+
+const SERVINGS_OPTIONS = Array.from({ length: 12 }, (_, i) => (i + 1).toString());
+
 const RecipeForm = () => {
   const [ingredients, setIngredients] = useState<string[]>([]);
   const [cuisineType, setCuisineType] = useState("");
-  const [nombreCouverts, setNombreCouverts] = useState<number>(4);
+  const [cookingType, setCookingType] = useState(COOKING_TYPES[0]);
+  const [nombreCouverts, setNombreCouverts] = useState<string>("4");
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
   const [progress, setProgress] = useState(0);
@@ -103,15 +112,6 @@ const RecipeForm = () => {
       return false;
     }
 
-    if (nombreCouverts < 1 || nombreCouverts > 12 || !Number.isInteger(nombreCouverts)) {
-      toast({
-        title: "Nombre de couverts invalide",
-        description: "Le nombre de couverts doit être un nombre entier entre 1 et 12.",
-        variant: "destructive",
-      });
-      return false;
-    }
-
     return true;
   };
 
@@ -152,6 +152,13 @@ const RecipeForm = () => {
       );
     }
 
+    // Ajouter la contrainte de type de cuisson
+    if (cookingType !== "Cuisine traditionnelle") {
+      additionalRequirements.push(
+        `en utilisant spécifiquement la méthode de cuisson "${cookingType}"`
+      );
+    }
+
     const additionalPrompt =
       additionalRequirements.length > 0
         ? `Contraintes supplémentaires: ${additionalRequirements.join(". ")}. `
@@ -166,7 +173,8 @@ const RecipeForm = () => {
         cuisineType,
         ingredients,
         additionalPrompt,
-        nombreCouverts
+        nombreCouverts: parseInt(nombreCouverts),
+        cookingType
       });
 
       setLoadingMessage("Mise en forme de votre recette...");
@@ -208,13 +216,6 @@ const RecipeForm = () => {
     }
   };
 
-  const handleNombreCouvertsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(e.target.value);
-    if (!isNaN(value)) {
-      setNombreCouverts(value);
-    }
-  };
-
   return (
     <div className="mobile-container">
       <div className="mobile-header flex-col py-4">
@@ -252,17 +253,38 @@ const RecipeForm = () => {
 
             <div className="space-y-2">
               <label className="text-sm font-medium">
+                Votre type de cuisson :
+              </label>
+              <Select value={cookingType} onValueChange={setCookingType}>
+                <SelectTrigger className="rounded-xl border-gray-200">
+                  <SelectValue placeholder="Sélectionnez un type de cuisson" />
+                </SelectTrigger>
+                <SelectContent>
+                  {COOKING_TYPES.map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">
                 Nombre de couverts :
               </label>
-              <Input
-                type="number"
-                min="1"
-                max="12"
-                step="1"
-                value={nombreCouverts}
-                onChange={handleNombreCouvertsChange}
-                className="rounded-xl border-gray-200"
-              />
+              <Select value={nombreCouverts} onValueChange={setNombreCouverts}>
+                <SelectTrigger className="rounded-xl border-gray-200">
+                  <SelectValue placeholder="Sélectionnez le nombre de couverts" />
+                </SelectTrigger>
+                <SelectContent>
+                  {SERVINGS_OPTIONS.map((number) => (
+                    <SelectItem key={number} value={number}>
+                      {number}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-3">

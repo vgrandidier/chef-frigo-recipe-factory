@@ -6,15 +6,16 @@ interface MistralRequestParams {
   ingredients: string[];
   additionalPrompt: string;
   nombreCouverts?: number;
+  cookingType?: string;
 }
 
 export const getMistralRecipe = async (
   params: MistralRequestParams
 ): Promise<string> => {
-  const { cuisineType, ingredients, additionalPrompt, nombreCouverts = 4 } = params;
+  const { cuisineType, ingredients, additionalPrompt, nombreCouverts = 4, cookingType = "Cuisine traditionnelle" } = params;
   
   try {
-    console.log("Préparation de l'appel à l'edge function avec les paramètres:", { cuisineType, ingredients, nombreCouverts });
+    console.log("Préparation de l'appel à l'edge function avec les paramètres:", { cuisineType, ingredients, nombreCouverts, cookingType });
     
     // Appel à l'edge function avec une configuration valide
     const { data, error } = await supabase.functions.invoke('get-mistral-recipe', {
@@ -22,7 +23,8 @@ export const getMistralRecipe = async (
         cuisineType,
         ingredients,
         additionalPrompt,
-        nombreCouverts
+        nombreCouverts,
+        cookingType
       }
     });
 
