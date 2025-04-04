@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -15,7 +14,7 @@ import { IngredientInput } from "@/components/IngredientInput";
 import { Logo } from "@/components/Logo";
 import { useToast } from "@/components/ui/use-toast";
 import { Progress } from "@/components/ui/progress";
-import { X, Clock, HeartPulse, Refrigerator, ChefHat, Flame, AirVent, Utensils, Stove } from "lucide-react";
+import { X, Clock, HeartPulse, Refrigerator, ChefHat, Flame, AirVent, Utensils, Cooking } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { MobileNavigation } from "@/components/MobileNavigation";
 import { getMistralRecipe } from "@/utils/recipe/getMistralRecipe";
@@ -220,13 +219,13 @@ const RecipeForm = () => {
   const renderCookingTypeIcon = (type: string) => {
     switch (type) {
       case "Cuisine traditionnelle":
-        return <Stove className="h-6 w-6 text-primary" />;
+        return <Cooking className="h-6 w-6 text-primary" />;
       case "Air Fryer":
         return <AirVent className="h-6 w-6 text-primary" />;
       case "Barbecue / Plancha":
         return <Flame className="h-6 w-6 text-primary" />;
       default:
-        return <Stove className="h-6 w-6 text-primary" />;
+        return <Cooking className="h-6 w-6 text-primary" />;
     }
   };
 
