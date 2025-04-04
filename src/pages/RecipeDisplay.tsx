@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,6 +8,7 @@ import { RecipeInfo } from "@/components/RecipeInfo";
 import { RecipeIngredients } from "@/components/RecipeIngredients";
 import { RecipeInstructions } from "@/components/RecipeInstructions";
 import { RecipeNutrition } from "@/components/RecipeNutrition";
+import { ActionIcons } from "@/components/ActionIcons";
 import { 
   shareRecipe,
   Recipe as RecipeType
@@ -33,9 +33,7 @@ const RecipeDisplay = () => {
 
   const { recipe, recipeImage } = state;
 
-  const handlePrint = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handlePrint = async () => {
     try {
       await shareRecipe(recipe, recipeImage, 'print');
     } catch (error) {
@@ -48,40 +46,8 @@ const RecipeDisplay = () => {
     }
   };
 
-  const shareViaEmail = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    try {
-      setIsSharing(true);
-      await shareRecipe(recipe, recipeImage, 'email');
-    } catch (error) {
-      console.error("Erreur lors du partage par email:", error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de partager par email. Veuillez réessayer.",
-        duration: 3000,
-      });
-    } finally {
-      setIsSharing(false);
-    }
-  };
-
-  const shareViaWhatsapp = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    try {
-      setIsSharing(true);
-      await shareRecipe(recipe, recipeImage, 'whatsapp');
-    } catch (error) {
-      console.error("Erreur lors du partage WhatsApp:", error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de partager via WhatsApp. Veuillez réessayer.",
-        duration: 3000,
-      });
-    } finally {
-      setIsSharing(false);
-    }
+  const handleBack = () => {
+    navigate("/");
   };
 
   // Fonction pour nettoyer les instructions en supprimant les "Étape x : " au début
@@ -93,6 +59,11 @@ const RecipeDisplay = () => {
     <div className="mobile-container">
       <div className="mobile-header no-print">
         <Logo size="sm" />
+        <ActionIcons 
+          url={window.location.href} 
+          onPrint={handlePrint} 
+          onBack={handleBack}
+        />
       </div>
 
       <div className="mobile-content">
@@ -143,24 +114,8 @@ const RecipeDisplay = () => {
       <MobileNavigation 
         showShareButton={true} 
         onShare={() => {
-          const shareOptions = [
-            { 
-              label: "Email",
-              action: (e: any) => shareViaEmail(e)
-            },
-            {
-              label: "WhatsApp",
-              action: (e: any) => shareViaWhatsapp(e)
-            },
-            {
-              label: "Imprimer",
-              action: (e: any) => handlePrint(e)
-            }
-          ];
-          
-          // Ici, vous pourriez utiliser un gestionnaire d'état global ou un service
-          // pour montrer une boîte de dialogue avec ces options
-          // Pour l'instant, nous utilisons la navigation mobile existante
+          // Open the share popover through the ActionIcons component
+          // This shouldn't be needed since we now display the ActionIcons in the header
         }}
       />
     </div>
