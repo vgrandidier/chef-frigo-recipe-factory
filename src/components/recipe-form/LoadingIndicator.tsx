@@ -34,7 +34,7 @@ export const LoadingIndicator = ({
           <X className="h-4 w-4" />
         </Button>
       </div>
-      <Progress value={progress} className="h-2" />
+      <Progress value={progress} className="h-2 bg-culinary-accent" />
     </div>
   );
 };
