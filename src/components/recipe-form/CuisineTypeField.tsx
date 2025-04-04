@@ -23,7 +23,7 @@ const CUISINE_TYPES = [
   "Méditerranéenne",
   "Mexicaine",
   "Scandinave",
-  "Thaïe",
+  "Thaie",
 ];
 
 interface CuisineTypeFieldProps {
