@@ -11,30 +11,36 @@ interface ActionIconsProps {
   onPrint?: () => void;
   onBack?: () => void;
   className?: string;
+  onEmailShare?: () => void;
+  onWhatsappShare?: () => void;
 }
 
-export function ActionIcons({ url, onPrint, onBack, className }: ActionIconsProps) {
+export function ActionIcons({ 
+  url, 
+  onPrint, 
+  onBack, 
+  className,
+  onEmailShare,
+  onWhatsappShare
+}: ActionIconsProps) {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(url).then(() => {
-      toast({
-        title: "Lien copié !",
-        description: "Le lien a été copié dans le presse-papier.",
-        duration: 3000,
-      });
-      setOpen(false);
-    });
-  };
-
   const shareViaEmail = () => {
-    window.open(`mailto:?subject=Une recette pour toi de Chef Frigo&body=Regarde cette recette que j'ai trouvée: ${url}`);
+    if (onEmailShare) {
+      onEmailShare();
+    } else {
+      window.open(`mailto:?subject=Une recette pour toi de Chef Frigo&body=Regarde cette recette que j'ai trouvée: ${url}`);
+    }
     setOpen(false);
   };
 
   const shareViaWhatsapp = () => {
-    window.open(`https://api.whatsapp.com/send?text=Regarde cette recette que j'ai trouvée: ${url}`);
+    if (onWhatsappShare) {
+      onWhatsappShare();
+    } else {
+      window.open(`https://api.whatsapp.com/send?text=Regarde cette recette que j'ai trouvée: ${url}`);
+    }
     setOpen(false);
   };
 
@@ -54,13 +60,6 @@ export function ActionIcons({ url, onPrint, onBack, className }: ActionIconsProp
         </PopoverTrigger>
         <PopoverContent className="w-56 p-2">
           <div className="grid gap-2">
-            <Button onClick={handleCopyLink} variant="outline" className="justify-start">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-              </svg>
-              Copier le lien
-            </Button>
             <Button onClick={shareViaEmail} variant="outline" className="justify-start">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
                 <rect width="20" height="16" x="2" y="4" rx="2" />
