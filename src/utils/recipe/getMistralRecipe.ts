@@ -5,7 +5,7 @@ interface MistralRequestParams {
   cuisineType: string;
   ingredients: string[];
   additionalPrompt: string;
-  nombreCouverts?: number;
+  nombreCouverts?: number | string;
   cookingType?: string;
 }
 
