@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -217,6 +216,12 @@ const RecipeForm = () => {
     }
   };
 
+  const handleSliderChange = (value: number[]) => {
+    // Ensure the value is rounded to the nearest integer
+    const roundedValue = Math.round(value[0]);
+    setNombreCouverts(roundedValue);
+  };
+
   const renderCookingTypeIcon = (type: string) => {
     switch (type) {
       case "Cuisine traditionnelle":
@@ -275,7 +280,7 @@ const RecipeForm = () => {
                 step={1} 
                 defaultValue={[4]} 
                 value={[nombreCouverts]} 
-                onValueChange={(value) => setNombreCouverts(value[0])}
+                onValueChange={handleSliderChange}
                 className="py-4"
                 showMarks={true}
               />
