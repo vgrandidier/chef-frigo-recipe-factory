@@ -15,10 +15,13 @@ import { IngredientInput } from "@/components/IngredientInput";
 import { Logo } from "@/components/Logo";
 import { useToast } from "@/components/ui/use-toast";
 import { Progress } from "@/components/ui/progress";
-import { X, Clock, HeartPulse, Refrigerator, ChefHat } from "lucide-react";
+import { X, Clock, HeartPulse, Refrigerator, ChefHat, Flame, AirVent, Utensils } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { MobileNavigation } from "@/components/MobileNavigation";
 import { getMistralRecipe } from "@/utils/recipe/getMistralRecipe";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { useForm } from "react-hook-form";
 
 const CUISINE_TYPES = [
   "Africaine",
@@ -216,6 +219,19 @@ const RecipeForm = () => {
     }
   };
 
+  const renderCookingTypeIcon = (type: string) => {
+    switch (type) {
+      case "Cuisine traditionnelle":
+        return <Flame className="h-6 w-6" />;
+      case "Air Fryer":
+        return <AirVent className="h-6 w-6" />;
+      case "Barbecue / Plancha":
+        return <Utensils className="h-6 w-6" />;
+      default:
+        return <Flame className="h-6 w-6" />;
+    }
+  };
+
   return (
     <div className="mobile-container">
       <div className="mobile-header flex-col py-4">
@@ -253,24 +269,6 @@ const RecipeForm = () => {
 
             <div className="space-y-2">
               <label className="text-sm font-medium">
-                Votre type de cuisson :
-              </label>
-              <Select value={cookingType} onValueChange={setCookingType}>
-                <SelectTrigger className="rounded-xl border-gray-200">
-                  <SelectValue placeholder="Sélectionnez un type de cuisson" />
-                </SelectTrigger>
-                <SelectContent>
-                  {COOKING_TYPES.map((type) => (
-                    <SelectItem key={type} value={type}>
-                      {type}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
                 Nombre de couverts :
               </label>
               <Select value={nombreCouverts} onValueChange={setNombreCouverts}>
@@ -285,6 +283,29 @@ const RecipeForm = () => {
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">
+                Votre type de cuisson :
+              </label>
+              <RadioGroup 
+                value={cookingType} 
+                onValueChange={setCookingType}
+                className="grid grid-cols-3 gap-2"
+              >
+                {COOKING_TYPES.map((type) => (
+                  <div key={type} className="flex flex-col items-center space-y-2 border rounded-lg p-3">
+                    {renderCookingTypeIcon(type)}
+                    <FormLabel className="text-center text-xs mt-1">{type}</FormLabel>
+                    <RadioGroupItem 
+                      value={type} 
+                      id={`cooking-${type}`} 
+                      className="rounded-sm"
+                    />
+                  </div>
+                ))}
+              </RadioGroup>
             </div>
 
             <div className="space-y-3">
