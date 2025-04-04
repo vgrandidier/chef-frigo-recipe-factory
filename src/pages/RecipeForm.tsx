@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -15,7 +14,7 @@ import { IngredientInput } from "@/components/IngredientInput";
 import { Logo } from "@/components/Logo";
 import { useToast } from "@/components/ui/use-toast";
 import { Progress } from "@/components/ui/progress";
-import { X, Clock, HeartPulse, Refrigerator, ChefHat, Flame, AirVent, Utensils, PanelTop } from "lucide-react";
+import { X, Clock, HeartPulse, Refrigerator, ChefHat, Flame, AirVent, PanelTop, Utensils } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { MobileNavigation } from "@/components/MobileNavigation";
 import { getMistralRecipe } from "@/utils/recipe/getMistralRecipe";
@@ -220,7 +219,7 @@ const RecipeForm = () => {
   const renderCookingTypeIcon = (type: string) => {
     switch (type) {
       case "Cuisine traditionnelle":
-        return <PanelTop className="h-6 w-6 text-primary" />;
+        return <Utensils className="h-6 w-6 text-primary" />;
       case "Air Fryer":
         return <AirVent className="h-6 w-6 text-primary" />;
       case "Barbecue / Plancha":
@@ -267,7 +266,7 @@ const RecipeForm = () => {
 
             <div className="space-y-4">
               <label className="text-sm font-medium">
-                Nombre de couverts : {nombreCouverts}
+                Nombre de couverts
               </label>
               <Slider 
                 min={1} 
@@ -277,8 +276,7 @@ const RecipeForm = () => {
                 value={[nombreCouverts]} 
                 onValueChange={(value) => setNombreCouverts(value[0])}
                 className="py-4"
-                showValue={true}
-                valuePosition="bottom"
+                showMarks={true}
               />
             </div>
 
@@ -292,7 +290,7 @@ const RecipeForm = () => {
                 className="grid grid-cols-3 gap-2"
               >
                 {COOKING_TYPES.map((type) => (
-                  <div key={type} className="flex flex-col items-center space-y-2 border rounded-lg p-3">
+                  <div key={type} className="flex flex-col items-center space-y-2 border rounded-xl p-3">
                     {renderCookingTypeIcon(type)}
                     <Label className="text-center text-xs mt-1">{type}</Label>
                     <RadioGroupItem 
@@ -309,7 +307,7 @@ const RecipeForm = () => {
               <label className="text-sm font-medium">Options :</label>
 
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                <div className="mobile-card p-3 flex flex-col items-center justify-center">
+                <div className="flex flex-col items-center justify-center border rounded-xl p-3">
                   <Refrigerator className="h-6 w-6 text-primary mb-2" />
                   <span className="text-xs mb-2">Fond de frigo</span>
                   <Checkbox
@@ -322,7 +320,7 @@ const RecipeForm = () => {
                   />
                 </div>
 
-                <div className="mobile-card p-3 flex flex-col items-center justify-center">
+                <div className="flex flex-col items-center justify-center border rounded-xl p-3">
                   <Clock className="h-6 w-6 text-primary mb-2" />
                   <span className="text-xs mb-2">Rapide</span>
                   <Checkbox
@@ -333,7 +331,7 @@ const RecipeForm = () => {
                   />
                 </div>
 
-                <div className="mobile-card p-3 flex flex-col items-center justify-center">
+                <div className="flex flex-col items-center justify-center border rounded-xl p-3">
                   <HeartPulse className="h-6 w-6 text-primary mb-2" />
                   <span className="text-xs mb-2">Équilibré</span>
                   <Checkbox
@@ -344,7 +342,7 @@ const RecipeForm = () => {
                   />
                 </div>
                 
-                <div className="mobile-card p-3 flex flex-col items-center justify-center">
+                <div className="flex flex-col items-center justify-center border rounded-xl p-3">
                   <ChefHat className="h-6 w-6 text-primary mb-2" />
                   <span className="text-xs mb-2">Gourmet</span>
                   <Checkbox
@@ -394,4 +392,3 @@ const RecipeForm = () => {
 };
 
 export default RecipeForm;
-
