@@ -29,6 +29,17 @@ const Slider = React.forwardRef<
     return result;
   }, [min, max, step, showMarks]);
   
+  // Ensure value snaps to steps
+  const handleValueChange = (newValue: number[]) => {
+    if (props.onValueChange) {
+      // Round to nearest step
+      const roundedValue = newValue.map(v => 
+        Math.round((v - min) / step) * step + min
+      );
+      props.onValueChange(roundedValue);
+    }
+  };
+  
   return (
     <div className="relative w-full">
       {showValue && valuePosition === "top" && (
@@ -42,6 +53,10 @@ const Slider = React.forwardRef<
           "relative flex w-full touch-none select-none items-center",
           className
         )}
+        step={step}
+        min={min}
+        max={max}
+        onValueChange={handleValueChange}
         {...props}
       >
         <SliderPrimitive.Track className="relative h-2 w-full grow overflow-hidden rounded-full bg-secondary">
