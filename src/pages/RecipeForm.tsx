@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -173,7 +174,7 @@ const RecipeForm = () => {
         cuisineType,
         ingredients,
         additionalPrompt,
-        nombreCouverts: parseInt(nombreCouverts),
+        nombreCouverts: nombreCouverts.toString(), // Fix: Convert number to string
         cookingType
       });
 
@@ -393,3 +394,4 @@ const RecipeForm = () => {
 };
 
 export default RecipeForm;
+
