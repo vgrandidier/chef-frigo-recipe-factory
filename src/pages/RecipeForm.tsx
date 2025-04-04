@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -26,6 +27,10 @@ import {
   Utensils,
   CookingPot,
   Timer,
+  HandPlatter,
+  Ham,
+  CakeSlice,
+  Martini,
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { MobileNavigation } from "@/components/MobileNavigation";
@@ -59,10 +64,18 @@ const COOKING_TYPES = [
   "Barbecue / Plancha",
 ];
 
+const DISH_TYPES = [
+  { value: "Entrée", icon: HandPlatter },
+  { value: "Plat", icon: Ham },
+  { value: "Dessert", icon: CakeSlice },
+  { value: "Apéro", icon: Martini },
+];
+
 const RecipeForm = () => {
   const [ingredients, setIngredients] = useState<string[]>([]);
   const [cuisineType, setCuisineType] = useState("");
   const [cookingType, setCookingType] = useState(COOKING_TYPES[0]);
+  const [dishType, setDishType] = useState("Plat");
   const [nombreCouverts, setNombreCouverts] = useState<number>(4);
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
@@ -164,6 +177,11 @@ const RecipeForm = () => {
       );
     }
 
+    // Ajouter la contrainte de type de plat
+    additionalRequirements.push(
+      `la recette doit correspondre à un(e) ${dishType}`
+    );
+
     // Ajouter la contrainte de type de cuisson
     if (cookingType !== "Cuisine traditionnelle") {
       additionalRequirements.push(
@@ -187,6 +205,7 @@ const RecipeForm = () => {
         additionalPrompt,
         nombreCouverts: nombreCouverts.toString(), // Convert number to string explicitly
         cookingType,
+        dishType,
       });
 
       setLoadingMessage("Mise en forme de votre recette...");
@@ -245,6 +264,15 @@ const RecipeForm = () => {
       default:
         return <PanelTop className="h-6 w-6 text-primary" />;
     }
+  };
+
+  const renderDishTypeIcon = (type: string) => {
+    const dishTypeObj = DISH_TYPES.find(dt => dt.value === type);
+    if (dishTypeObj) {
+      const Icon = dishTypeObj.icon;
+      return <Icon className="h-6 w-6 text-primary" />;
+    }
+    return null;
   };
 
   return (
@@ -315,6 +343,32 @@ const RecipeForm = () => {
                     <RadioGroupItem
                       value={type}
                       id={`cooking-${type}`}
+                      className="rounded-sm"
+                    />
+                  </div>
+                ))}
+              </RadioGroup>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">
+                Que voulez-vous cuisiner ?
+              </label>
+              <RadioGroup
+                value={dishType}
+                onValueChange={setDishType}
+                className="grid grid-cols-4 gap-2"
+              >
+                {DISH_TYPES.map((type) => (
+                  <div
+                    key={type.value}
+                    className="flex flex-col items-center space-y-2 border rounded-xl p-3"
+                  >
+                    <type.icon className="h-6 w-6 text-primary" />
+                    <Label className="text-center text-xs mt-1">{type.value}</Label>
+                    <RadioGroupItem
+                      value={type.value}
+                      id={`dish-${type.value}`}
                       className="rounded-sm"
                     />
                   </div>

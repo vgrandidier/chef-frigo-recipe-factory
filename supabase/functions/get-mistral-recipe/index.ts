@@ -43,7 +43,7 @@ serve(async (req) => {
       );
     }
     
-    const { cuisineType, ingredients, additionalPrompt, nombreCouverts = 4, cookingType = "Cuisine traditionnelle" } = requestBody;
+    const { cuisineType, ingredients, additionalPrompt, nombreCouverts = 4, cookingType = "Cuisine traditionnelle", dishType = "Plat" } = requestBody;
 
     // Validation des paramètres
     if (!cuisineType || !ingredients || !Array.isArray(ingredients)) {
@@ -54,7 +54,7 @@ serve(async (req) => {
       );
     }
 
-    console.log("Traitement de la requête avec les paramètres:", { cuisineType, ingredients, additionalPrompt, nombreCouverts, cookingType });
+    console.log("Traitement de la requête avec les paramètres:", { cuisineType, ingredients, additionalPrompt, nombreCouverts, cookingType, dishType });
     console.log("Clé API Mistral vérifiée:", apiKey ? "présente" : "absente");
 
     // Construction du prompt avec le type de cuisson
@@ -63,10 +63,13 @@ serve(async (req) => {
       cookingTypePrompt = `Je veux préparer cette recette en utilisant un "${cookingType}". `;
     }
 
+    // Construction du prompt avec le type de plat
+    const dishTypePrompt = `Je veux préparer un(e) "${dishType}". `;
+
     // Construction du prompt
     const prompt = `Je voudrais une recette de type ${cuisineType} avec ${ingredients.join(
       ", "
-    )} pour ${nombreCouverts} personnes. ${cookingTypePrompt}${additionalPrompt}En retour, je veux un titre, une description, la liste des ustensiles nécessaires, la liste complète des ingrédients avec les quantités, les valeurs nutritionnelles pour 100g (kcal, protéines, glucides, lipides, fibres), le Nutri-Score, le temps de préparation, le temps total, et les instructions pour la réalisation de la recette par étape. Les instructions doivent être regroupées par type de travail (préparation, cuisson, montage, etc.), et chaque groupe doit avoir un titre. Formate le résultat en JSON avec la structure suivante :
+    )} pour ${nombreCouverts} personnes. ${dishTypePrompt}${cookingTypePrompt}${additionalPrompt}En retour, je veux un titre, une description, la liste des ustensiles nécessaires, la liste complète des ingrédients avec les quantités, les valeurs nutritionnelles pour 100g (kcal, protéines, glucides, lipides, fibres), le Nutri-Score, le temps de préparation, le temps total, et les instructions pour la réalisation de la recette par étape. Les instructions doivent être regroupées par type de travail (préparation, cuisson, montage, etc.), et chaque groupe doit avoir un titre. Formate le résultat en JSON avec la structure suivante :
     {
       "titre": "Nom de la recette",
       "description": "Description de la recette",
