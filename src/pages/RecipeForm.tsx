@@ -20,8 +20,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { MobileNavigation } from "@/components/MobileNavigation";
 import { getMistralRecipe } from "@/utils/recipe/getMistralRecipe";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
+import { Label } from "@/components/ui/label";
 
 const CUISINE_TYPES = [
   "Africaine",
@@ -297,7 +296,7 @@ const RecipeForm = () => {
                 {COOKING_TYPES.map((type) => (
                   <div key={type} className="flex flex-col items-center space-y-2 border rounded-lg p-3">
                     {renderCookingTypeIcon(type)}
-                    <FormLabel className="text-center text-xs mt-1">{type}</FormLabel>
+                    <Label className="text-center text-xs mt-1">{type}</Label>
                     <RadioGroupItem 
                       value={type} 
                       id={`cooking-${type}`} 
