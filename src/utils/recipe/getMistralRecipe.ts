@@ -24,7 +24,7 @@ export const getMistralRecipe = async (
         cuisineType,
         ingredients,
         additionalPrompt,
-        nombreCouverts,
+        nombreCouverts: nombreCouverts.toString(), // Ensure nombreCouverts is a string
         cookingType,
         dishType
       }

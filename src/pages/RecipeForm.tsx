@@ -2,74 +2,20 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
 import { IngredientInput } from "@/components/IngredientInput";
 import { Logo } from "@/components/Logo";
-import { useToast } from "@/components/ui/use-toast";
-import { Progress } from "@/components/ui/progress";
-import {
-  X,
-  Clock,
-  HeartPulse,
-  Refrigerator,
-  ChefHat,
-  Flame,
-  AirVent,
-  PanelTop,
-  Utensils,
-  CookingPot,
-  Timer,
-  HandPlatter,
-  Ham,
-  CakeSlice,
-  Martini,
-} from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
 import { MobileNavigation } from "@/components/MobileNavigation";
 import { getMistralRecipe } from "@/utils/recipe/getMistralRecipe";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider";
 
-const CUISINE_TYPES = [
-  "Africaine",
-  "Amérique du Sud",
-  "Antillaise",
-  "Chinoise",
-  "Cubaine",
-  "Espagnole",
-  "Etats-Unis",
-  "Française",
-  "Grecque",
-  "Indienne",
-  "Italienne",
-  "Japonaise",
-  "Méditerranéenne",
-  "Mexicaine",
-  "Scandinave",
-  "Thaïe",
-];
-
-const COOKING_TYPES = [
-  "Cuisine traditionnelle",
-  "Air Fryer",
-  "Barbecue / Plancha",
-];
-
-const DISH_TYPES = [
-  { value: "Entrée", icon: HandPlatter },
-  { value: "Plat", icon: Ham },
-  { value: "Dessert", icon: CakeSlice },
-  { value: "Apéro", icon: Martini },
-];
+// Import refactored components
+import { CuisineTypeField } from "@/components/recipe-form/CuisineTypeField";
+import { ServeCountField } from "@/components/recipe-form/ServeCountField";
+import { CookingTypeField, COOKING_TYPES } from "@/components/recipe-form/CookingTypeField";
+import { DishTypeField } from "@/components/recipe-form/DishTypeField";
+import { RecipeOptionsField } from "@/components/recipe-form/RecipeOptionsField";
+import { LoadingIndicator } from "@/components/recipe-form/LoadingIndicator";
+import { FormSubmitButton } from "@/components/recipe-form/FormSubmitButton";
 
 const RecipeForm = () => {
   const [ingredients, setIngredients] = useState<string[]>([]);
@@ -84,7 +30,6 @@ const RecipeForm = () => {
   const [pressé, setPressé] = useState(false);
   const [léger, setLéger] = useState(false);
   const [gourmet, setGourmet] = useState(false);
-  const [recipeImage, setRecipeImage] = useState("");
 
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -247,34 +192,6 @@ const RecipeForm = () => {
     }
   };
 
-  const handleSliderChange = (value: number[]) => {
-    // Ensure the value is rounded to the nearest integer
-    const roundedValue = Math.round(value[0]);
-    setNombreCouverts(roundedValue);
-  };
-
-  const renderCookingTypeIcon = (type: string) => {
-    switch (type) {
-      case "Cuisine traditionnelle":
-        return <CookingPot className="h-6 w-6 text-primary" />;
-      case "Air Fryer":
-        return <AirVent className="h-6 w-6 text-primary" />;
-      case "Barbecue / Plancha":
-        return <Flame className="h-6 w-6 text-primary" />;
-      default:
-        return <PanelTop className="h-6 w-6 text-primary" />;
-    }
-  };
-
-  const renderDishTypeIcon = (type: string) => {
-    const dishTypeObj = DISH_TYPES.find(dt => dt.value === type);
-    if (dishTypeObj) {
-      const Icon = dishTypeObj.icon;
-      return <Icon className="h-6 w-6 text-primary" />;
-    }
-    return null;
-  };
-
   return (
     <div className="mobile-container">
       <div className="mobile-header flex-col py-4">
@@ -292,169 +209,45 @@ const RecipeForm = () => {
               />
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                Votre type de cuisine :
-              </label>
-              <Select value={cuisineType} onValueChange={setCuisineType}>
-                <SelectTrigger className="rounded-xl border-gray-200">
-                  <SelectValue placeholder="Sélectionnez un style culinaire" />
-                </SelectTrigger>
-                <SelectContent>
-                  {CUISINE_TYPES.map((type) => (
-                    <SelectItem key={type} value={type}>
-                      {type}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <CuisineTypeField 
+              cuisineType={cuisineType} 
+              setCuisineType={setCuisineType} 
+            />
 
-            <div className="space-y-4">
-              <label className="text-sm font-medium">Nombre de couverts</label>
-              <Slider
-                min={1}
-                max={12}
-                step={1}
-                defaultValue={[4]}
-                value={[nombreCouverts]}
-                onValueChange={handleSliderChange}
-                className="py-4"
-                showMarks={true}
-              />
-            </div>
+            <ServeCountField 
+              nombreCouverts={nombreCouverts} 
+              setNombreCouverts={setNombreCouverts} 
+            />
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                Votre type de cuisson :
-              </label>
-              <RadioGroup
-                value={cookingType}
-                onValueChange={setCookingType}
-                className="grid grid-cols-3 gap-2"
-              >
-                {COOKING_TYPES.map((type) => (
-                  <div
-                    key={type}
-                    className="flex flex-col items-center space-y-2 border rounded-xl p-3"
-                  >
-                    {renderCookingTypeIcon(type)}
-                    <Label className="text-center text-xs mt-1">{type}</Label>
-                    <RadioGroupItem
-                      value={type}
-                      id={`cooking-${type}`}
-                      className="rounded-sm"
-                    />
-                  </div>
-                ))}
-              </RadioGroup>
-            </div>
+            <CookingTypeField 
+              cookingType={cookingType} 
+              setCookingType={setCookingType} 
+            />
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                Que voulez-vous cuisiner ?
-              </label>
-              <RadioGroup
-                value={dishType}
-                onValueChange={setDishType}
-                className="grid grid-cols-4 gap-2"
-              >
-                {DISH_TYPES.map((type) => (
-                  <div
-                    key={type.value}
-                    className="flex flex-col items-center space-y-2 border rounded-xl p-3"
-                  >
-                    <type.icon className="h-6 w-6 text-primary" />
-                    <Label className="text-center text-xs mt-1">{type.value}</Label>
-                    <RadioGroupItem
-                      value={type.value}
-                      id={`dish-${type.value}`}
-                      className="rounded-sm"
-                    />
-                  </div>
-                ))}
-              </RadioGroup>
-            </div>
+            <DishTypeField 
+              dishType={dishType} 
+              setDishType={setDishType} 
+            />
 
-            <div className="space-y-3">
-              <label className="text-sm font-medium">Options :</label>
+            <RecipeOptionsField 
+              fondDeFrigo={fondDeFrigo}
+              setFondDeFrigo={setFondDeFrigo}
+              pressé={pressé}
+              setPressé={setPressé}
+              léger={léger}
+              setLéger={setLéger}
+              gourmet={gourmet}
+              setGourmet={setGourmet}
+            />
 
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                <div className="flex flex-col items-center justify-center border rounded-xl p-3">
-                  <Refrigerator className="h-6 w-6 text-primary mb-2" />
-                  <span className="text-xs mb-2">Fond de frigo</span>
-                  <Checkbox
-                    id="fondDeFrigo"
-                    checked={fondDeFrigo}
-                    onCheckedChange={(checked) =>
-                      setFondDeFrigo(checked === true)
-                    }
-                    className="h-5 w-5"
-                  />
-                </div>
+            <LoadingIndicator 
+              loading={loading} 
+              loadingMessage={loadingMessage}
+              progress={progress}
+              onCancel={handleCancelRequest}
+            />
 
-                <div className="flex flex-col items-center justify-center border rounded-xl p-3">
-                  <Timer className="h-6 w-6 text-primary mb-2" />
-                  <span className="text-xs mb-2">Rapide</span>
-                  <Checkbox
-                    id="presse"
-                    checked={pressé}
-                    onCheckedChange={(checked) => setPressé(checked === true)}
-                    className="h-5 w-5"
-                  />
-                </div>
-
-                <div className="flex flex-col items-center justify-center border rounded-xl p-3">
-                  <HeartPulse className="h-6 w-6 text-primary mb-2" />
-                  <span className="text-xs mb-2">Équilibré</span>
-                  <Checkbox
-                    id="leger"
-                    checked={léger}
-                    onCheckedChange={(checked) => setLéger(checked === true)}
-                    className="h-5 w-5"
-                  />
-                </div>
-
-                <div className="flex flex-col items-center justify-center border rounded-xl p-3">
-                  <ChefHat className="h-6 w-6 text-primary mb-2" />
-                  <span className="text-xs mb-2">Gourmet</span>
-                  <Checkbox
-                    id="gourmet"
-                    checked={gourmet}
-                    onCheckedChange={(checked) => setGourmet(checked === true)}
-                    className="h-5 w-5"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {loading && (
-              <div className="space-y-2 py-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">
-                    {loadingMessage}
-                  </span>
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="ghost"
-                    onClick={handleCancelRequest}
-                    className="h-6 w-6"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-                <Progress value={progress} className="h-2" />
-              </div>
-            )}
-
-            <Button
-              type="submit"
-              className="w-full mobile-button h-12 text-base"
-              disabled={loading}
-            >
-              {loading ? "Génération en cours..." : "Générer ma recette"}
-            </Button>
+            <FormSubmitButton loading={loading} />
           </form>
         </div>
       </div>
