@@ -27,7 +27,7 @@ export const RecipeOptionsField = ({
     <div className="space-y-3">
       <label className="text-sm font-medium">Options :</label>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="grid grid-cols-4 gap-3 sm:grid-cols-4">
         <div className="flex flex-col items-center justify-center border rounded-xl p-3">
           <Refrigerator className="h-6 w-6 text-primary mb-2" />
           <span className="text-xs mb-2">Exclusif</span>
