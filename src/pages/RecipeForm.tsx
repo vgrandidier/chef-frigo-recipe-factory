@@ -14,7 +14,19 @@ import { IngredientInput } from "@/components/IngredientInput";
 import { Logo } from "@/components/Logo";
 import { useToast } from "@/components/ui/use-toast";
 import { Progress } from "@/components/ui/progress";
-import { X, Clock, HeartPulse, Refrigerator, ChefHat, Flame, AirVent, PanelTop, Utensils } from "lucide-react";
+import {
+  X,
+  Clock,
+  HeartPulse,
+  Refrigerator,
+  ChefHat,
+  Flame,
+  AirVent,
+  PanelTop,
+  Utensils,
+  CookingPot,
+  Timer,
+} from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { MobileNavigation } from "@/components/MobileNavigation";
 import { getMistralRecipe } from "@/utils/recipe/getMistralRecipe";
@@ -174,7 +186,7 @@ const RecipeForm = () => {
         ingredients,
         additionalPrompt,
         nombreCouverts: nombreCouverts.toString(), // Convert number to string explicitly
-        cookingType
+        cookingType,
       });
 
       setLoadingMessage("Mise en forme de votre recette...");
@@ -225,7 +237,7 @@ const RecipeForm = () => {
   const renderCookingTypeIcon = (type: string) => {
     switch (type) {
       case "Cuisine traditionnelle":
-        return <Utensils className="h-6 w-6 text-primary" />;
+        return <CookingPot className="h-6 w-6 text-primary" />;
       case "Air Fryer":
         return <AirVent className="h-6 w-6 text-primary" />;
       case "Barbecue / Plancha":
@@ -271,15 +283,13 @@ const RecipeForm = () => {
             </div>
 
             <div className="space-y-4">
-              <label className="text-sm font-medium">
-                Nombre de couverts
-              </label>
-              <Slider 
-                min={1} 
-                max={12} 
-                step={1} 
-                defaultValue={[4]} 
-                value={[nombreCouverts]} 
+              <label className="text-sm font-medium">Nombre de couverts</label>
+              <Slider
+                min={1}
+                max={12}
+                step={1}
+                defaultValue={[4]}
+                value={[nombreCouverts]}
                 onValueChange={handleSliderChange}
                 className="py-4"
                 showMarks={true}
@@ -290,18 +300,21 @@ const RecipeForm = () => {
               <label className="text-sm font-medium">
                 Votre type de cuisson :
               </label>
-              <RadioGroup 
-                value={cookingType} 
+              <RadioGroup
+                value={cookingType}
                 onValueChange={setCookingType}
                 className="grid grid-cols-3 gap-2"
               >
                 {COOKING_TYPES.map((type) => (
-                  <div key={type} className="flex flex-col items-center space-y-2 border rounded-xl p-3">
+                  <div
+                    key={type}
+                    className="flex flex-col items-center space-y-2 border rounded-xl p-3"
+                  >
                     {renderCookingTypeIcon(type)}
                     <Label className="text-center text-xs mt-1">{type}</Label>
-                    <RadioGroupItem 
-                      value={type} 
-                      id={`cooking-${type}`} 
+                    <RadioGroupItem
+                      value={type}
+                      id={`cooking-${type}`}
                       className="rounded-sm"
                     />
                   </div>
@@ -327,7 +340,7 @@ const RecipeForm = () => {
                 </div>
 
                 <div className="flex flex-col items-center justify-center border rounded-xl p-3">
-                  <Clock className="h-6 w-6 text-primary mb-2" />
+                  <Timer className="h-6 w-6 text-primary mb-2" />
                   <span className="text-xs mb-2">Rapide</span>
                   <Checkbox
                     id="presse"
@@ -347,7 +360,7 @@ const RecipeForm = () => {
                     className="h-5 w-5"
                   />
                 </div>
-                
+
                 <div className="flex flex-col items-center justify-center border rounded-xl p-3">
                   <ChefHat className="h-6 w-6 text-primary mb-2" />
                   <span className="text-xs mb-2">Gourmet</span>
