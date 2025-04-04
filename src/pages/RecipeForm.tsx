@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -168,12 +169,12 @@ const RecipeForm = () => {
       setLoadingMessage("Chef Frigo prépare la recette...");
       setProgress(30);
 
-      // Utiliser notre nouveau module pour obtenir la recette
+      // Fix: convert nombreCouverts to string here
       const cleanedResponse = await getMistralRecipe({
         cuisineType,
         ingredients,
         additionalPrompt,
-        nombreCouverts: nombreCouverts.toString(), // Fix: Convert number to string
+        nombreCouverts: nombreCouverts.toString(), // Convert number to string explicitly
         cookingType
       });
 
