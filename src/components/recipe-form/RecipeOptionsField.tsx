@@ -30,7 +30,7 @@ export const RecipeOptionsField = ({
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div className="flex flex-col items-center justify-center border rounded-xl p-3">
           <Refrigerator className="h-6 w-6 text-primary mb-2" />
-          <span className="text-xs mb-2">Fond de frigo</span>
+          <span className="text-xs mb-2">Exclusif</span>
           <Checkbox
             id="fondDeFrigo"
             checked={fondDeFrigo}
