@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -15,12 +14,13 @@ import { IngredientInput } from "@/components/IngredientInput";
 import { Logo } from "@/components/Logo";
 import { useToast } from "@/components/ui/use-toast";
 import { Progress } from "@/components/ui/progress";
-import { X, Clock, HeartPulse, Refrigerator, ChefHat, Flame, AirVent, Utensils } from "lucide-react";
+import { X, Clock, HeartPulse, Refrigerator, ChefHat, Flame, AirVent, Utensils, Oven, Cooker } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { MobileNavigation } from "@/components/MobileNavigation";
 import { getMistralRecipe } from "@/utils/recipe/getMistralRecipe";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
 
 const CUISINE_TYPES = [
   "Africaine",
@@ -47,13 +47,11 @@ const COOKING_TYPES = [
   "Barbecue / Plancha",
 ];
 
-const SERVINGS_OPTIONS = Array.from({ length: 12 }, (_, i) => (i + 1).toString());
-
 const RecipeForm = () => {
   const [ingredients, setIngredients] = useState<string[]>([]);
   const [cuisineType, setCuisineType] = useState("");
   const [cookingType, setCookingType] = useState(COOKING_TYPES[0]);
-  const [nombreCouverts, setNombreCouverts] = useState<string>("4");
+  const [nombreCouverts, setNombreCouverts] = useState<number>(4);
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
   const [progress, setProgress] = useState(0);
@@ -221,13 +219,13 @@ const RecipeForm = () => {
   const renderCookingTypeIcon = (type: string) => {
     switch (type) {
       case "Cuisine traditionnelle":
-        return <Flame className="h-6 w-6" />;
+        return <Cooker className="h-6 w-6 text-primary" />;
       case "Air Fryer":
-        return <AirVent className="h-6 w-6" />;
+        return <AirVent className="h-6 w-6 text-primary" />;
       case "Barbecue / Plancha":
-        return <Utensils className="h-6 w-6" />;
+        return <Flame className="h-6 w-6 text-primary" />;
       default:
-        return <Flame className="h-6 w-6" />;
+        return <Cooker className="h-6 w-6 text-primary" />;
     }
   };
 
@@ -266,22 +264,21 @@ const RecipeForm = () => {
               </Select>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-4">
               <label className="text-sm font-medium">
-                Nombre de couverts :
+                Nombre de couverts : {nombreCouverts}
               </label>
-              <Select value={nombreCouverts} onValueChange={setNombreCouverts}>
-                <SelectTrigger className="rounded-xl border-gray-200">
-                  <SelectValue placeholder="Sélectionnez le nombre de couverts" />
-                </SelectTrigger>
-                <SelectContent>
-                  {SERVINGS_OPTIONS.map((number) => (
-                    <SelectItem key={number} value={number}>
-                      {number}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Slider 
+                min={1} 
+                max={12} 
+                step={1} 
+                defaultValue={[4]} 
+                value={[nombreCouverts]} 
+                onValueChange={(value) => setNombreCouverts(value[0])}
+                className="py-4"
+                showValue={true}
+                valuePosition="bottom"
+              />
             </div>
 
             <div className="space-y-2">
