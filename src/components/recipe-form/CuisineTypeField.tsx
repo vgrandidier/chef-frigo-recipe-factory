@@ -12,6 +12,7 @@ const CUISINE_TYPES = [
   "Amérique du Sud",
   "Antillaise",
   "Chinoise",
+  "Coréenne",
   "Cubaine",
   "Espagnole",
   "Etats-Unis",
